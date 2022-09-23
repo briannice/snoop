@@ -1,6 +1,7 @@
 import sys
 
-from components import App, Window
+from base.App import App
+from base.Window import Window
 
 
 if __name__ == "__main__":
