@@ -47,5 +47,4 @@ class Root(QWidget):
         self.router_layout.setCurrentIndex(1)
 
     def set_selected_page(self, i):
-        print(i)
         self.router_layout.setCurrentIndex(i)
