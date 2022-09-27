@@ -97,7 +97,7 @@ def port_scan_tcp_half_open(ip: IPv4Address, port: int) -> PortScanTCPResult:
         flag = _create_flag_number(flags)
 
         #
-        if "ACK" in flags:
+        if "ACK" in flags and "SYN" in flags:
             return PortScanTCPResult(
                 ip=ip,
                 port=port,
@@ -108,7 +108,7 @@ def port_scan_tcp_half_open(ip: IPv4Address, port: int) -> PortScanTCPResult:
             )
 
         #
-        elif "RST" in flags:
+        elif "ACK" in flags and "RST" in flags:
             return PortScanTCPResult(
                 ip=ip,
                 port=port,
@@ -132,12 +132,16 @@ def port_scan_tcp_connect(ip: IPv4Address, port: int) -> PortScanTCPResult:
     SYN request closing the connection on the target host.
     """
 
-    src_port = randint(0, 65535)
-    dst_port = port
-    dst_ip = str(ip)
-    flags = 0x02
+    tcp_sport = randint(0, 65535)
+    tcp_dport = port
+    tcp_flags = 0x02
+    ip_dst = str(ip)
 
-    segment = IP(dst=dst_ip) / TCP(sport=src_port, dport=dst_port, flags=flags)
+    # Create a TCP segment
+    segment = \
+        IP(dst=ip_dst) / \
+        TCP(sport=tcp_sport, dport=tcp_dport, flags=tcp_flags)
+
     response = sr1(segment, timeout=2, verbose=0)
 
     # Check if there is a response and if that response has a TCP layer.
@@ -146,12 +150,13 @@ def port_scan_tcp_connect(ip: IPv4Address, port: int) -> PortScanTCPResult:
         flag = _create_flag_number(flags)
 
         #
-        if "ACK" in flags:
+        if "ACK" in flags and "SYN" in flags:
+            tcp_flags = 0x10
 
-            # Close the connection
-            tcp_flags = 0x04
-            segment = IP(dst=dst_ip) / \
-                TCP(sport=src_port, dport=dst_port, flags=tcp_flags)
+            segment = \
+                IP(dst=ip_dst) / \
+                TCP(sport=tcp_sport, dport=tcp_dport, flags=tcp_flags)
+
             sr1(segment, timeout=2, verbose=0)
 
             return PortScanTCPResult(
@@ -163,8 +168,7 @@ def port_scan_tcp_connect(ip: IPv4Address, port: int) -> PortScanTCPResult:
                 scan_type="CONNECT"
             )
 
-        #
-        elif "RST" in flags:
+        elif "ACK" in flags and "RST" in flags:
             return PortScanTCPResult(
                 ip=ip,
                 port=port,
@@ -187,5 +191,4 @@ if __name__ == "__main__":
     ip = IPv4Address("192.168.56.90")
 
     for port in ports:
-        print(port_scan_tcp_half_open(ip=ip, port=port))
         print(port_scan_tcp_connect(ip=ip, port=port))
