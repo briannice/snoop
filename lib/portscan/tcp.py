@@ -47,16 +47,18 @@ class PortScanTCPResult():
         port: int = 0,
         flag: int = 0x00,
         flags: List[str] = ["NULL"],
-        result: str = "FILTERED"
+        result: str = "FILTERED",
+        scan_type: str = "OPEN"
     ):
         self.ip = ip
         self.port = port
         self.flag = flag
         self.flags = flags
         self.result = result
+        self.scan_type = scan_type
 
     def __str__(self):
-        return f"[TCP OPEN] - {self.ip}:{self.port} - {self.result} - {self.flags} - {hex(self.flag)}"
+        return f"[TCP {self.scan_type}] - {self.ip}:{self.port} - {self.result} - {self.flags} - {hex(self.flag)}"
 
 
 def _create_flag_list(flag: int) -> List[str]:
@@ -101,7 +103,8 @@ def port_scan_tcp_half_open(ip: IPv4Address, port: int) -> PortScanTCPResult:
                 port=port,
                 flag=flag,
                 flags=flags,
-                result="OPEN"
+                result="OPEN",
+                scan_type="OPEN"
             )
 
         #
@@ -111,18 +114,72 @@ def port_scan_tcp_half_open(ip: IPv4Address, port: int) -> PortScanTCPResult:
                 port=port,
                 flag=flag,
                 flags=flags,
-                result="CLOSED"
+                result="CLOSED",
+                scan_type="OPEN"
             )
 
     return PortScanTCPResult(
         ip=ip,
         port=port,
-        result="FILTERED"
+        result="FILTERED",
+        scan_type="OPEN"
     )
 
 
-def port_scan_tcp_connect():
-    pass
+def port_scan_tcp_connect(ip: IPv4Address, port: int) -> PortScanTCPResult:
+    """
+    Execute a port scan on a target host with the given IP address using a TCP
+    SYN request closing the connection on the target host.
+    """
+
+    src_port = randint(0, 65535)
+    dst_port = port
+    dst_ip = str(ip)
+    flags = 0x02
+
+    segment = IP(dst=dst_ip) / TCP(sport=src_port, dport=dst_port, flags=flags)
+    response = sr1(segment, timeout=2, verbose=0)
+
+    # Check if there is a response and if that response has a TCP layer.
+    if response is not None and response.haslayer(TCP):
+        flags = _create_flag_list(response.getlayer(TCP).flags)
+        flag = _create_flag_number(flags)
+
+        #
+        if "ACK" in flags:
+
+            # Close the connection
+            tcp_flags = 0x04
+            segment = IP(dst=dst_ip) / \
+                TCP(sport=src_port, dport=dst_port, flags=tcp_flags)
+            sr1(segment, timeout=2, verbose=0)
+
+            return PortScanTCPResult(
+                ip=ip,
+                port=port,
+                flag=flag,
+                flags=flags,
+                result="OPEN",
+                scan_type="CONNECT"
+            )
+
+        #
+        elif "RST" in flags:
+            return PortScanTCPResult(
+                ip=ip,
+                port=port,
+                flag=flag,
+                flags=flags,
+                result="CLOSED",
+                scan_type="CONNECT"
+            )
+
+    return PortScanTCPResult(
+        ip=ip,
+        port=port,
+        result="FILTERED",
+        scan_type="CONNECT"
+    )
 
 
 if __name__ == "__main__":
@@ -131,3 +188,4 @@ if __name__ == "__main__":
 
     for port in ports:
         print(port_scan_tcp_half_open(ip=ip, port=port))
+        print(port_scan_tcp_connect(ip=ip, port=port))
