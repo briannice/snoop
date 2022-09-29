@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QTabWidget
 
 
-from ui.tabs import FootprintingTab, HomeTab, ScanningTab
+from ui.tabs import FootprintingTab, HomeTab, ScanningTab, NslookupTab
 
 
 class RootWidget(QTabWidget):
@@ -14,7 +14,9 @@ class RootWidget(QTabWidget):
         self.HomeTab = HomeTab()
         self.FootprintingTab = FootprintingTab()
         self.ScanningTab = ScanningTab()
+        self.NslookupTab = NslookupTab()
 
         self.addTab(self.HomeTab, 'Home')
         self.addTab(self.FootprintingTab, 'Footprinting')
         self.addTab(self.ScanningTab, 'Scanning')
+        self.addTab(self.NslookupTab, 'Nslookup')
