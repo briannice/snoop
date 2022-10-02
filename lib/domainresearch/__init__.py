@@ -1,0 +1,1 @@
+from .nslookup import lookupNsRecord
