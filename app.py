@@ -14,6 +14,7 @@ class MainWindow(QMainWindow):
 
         self.RootWidget = RootWidget()
         self.setCentralWidget(self.RootWidget)
+        self.setContentsMargins(5, 5, 5, 5)
 
 
 if __name__ == "__main__":

@@ -95,9 +95,3 @@ def port_scan_ping(network: IPv4Network) -> List[PortScanICMPResult]:
         task.join()
 
     return result
-
-
-if __name__ == "__main__":
-    result = port_scan_ping(IPv4Network("192.168.1.0/24"))
-    for r in result:
-        print(r)
