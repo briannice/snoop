@@ -1,5 +1,6 @@
 import sys
 
+import dns.rdatatype
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget
 
 from ui import RootWidget
@@ -14,6 +15,16 @@ class MainWindow(QMainWindow):
 
         self.RootWidget = RootWidget()
         self.setCentralWidget(self.RootWidget)
+
+#testing, will delete later
+from lib.domainresearch.nslookup import *
+res = lookupNsRecord("kdg.be")
+if res is not None:
+    for re in res:
+        if re.rdtype == dns.rdatatype.MX:
+            print(re.exchange)
+        else:
+            print(re)
 
 
 if __name__ == "__main__":

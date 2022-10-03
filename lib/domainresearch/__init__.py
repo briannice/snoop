@@ -1,1 +1,1 @@
-from .nslookup import lookupNsRecord
+from .nslookup import lookupNsRecord, lookupARecord, lookupAAAARecord, lookupMXRecord
