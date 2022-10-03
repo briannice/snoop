@@ -184,11 +184,3 @@ def port_scan_tcp_connect(ip: IPv4Address, port: int) -> PortScanTCPResult:
         result="FILTERED",
         scan_type="CONNECT"
     )
-
-
-if __name__ == "__main__":
-    ports = [20, 21, 22, 80, 443]
-    ip = IPv4Address("192.168.56.90")
-
-    for port in ports:
-        print(port_scan_tcp_connect(ip=ip, port=port))

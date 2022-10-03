@@ -1,10 +1,8 @@
-from ipaddress import IPv4Address, IPv4Network
-from multiprocessing import Manager, Process
+from ipaddress import IPv4Address
 from scapy.all import ICMP, IP, sr1
-from typing import List
 
 
-class PortScanICMPResult():
+class PingScanResult():
 
     def __init__(
         self,
@@ -22,7 +20,7 @@ class PortScanICMPResult():
         return f"{str(self.ip)} --> {self.message}"
 
 
-def _port_scan_ping(ip: IPv4Address, result_list: List[PortScanICMPResult]):
+def ping_scan(ip: IPv4Address) -> PingScanResult:
     """
     Executa port scan on a target host with the given IP address using an
     ICMP echo request.
@@ -49,49 +47,25 @@ def _port_scan_ping(ip: IPv4Address, result_list: List[PortScanICMPResult]):
 
     #
     if response is None:
-        result = PortScanICMPResult(
+        return PingScanResult(
             ip=ip,
         )
-
-    elif (
-        int(response.getlayer(ICMP).type) == 3 and
-        int(response.getlayer(ICMP).code) in [1, 2, 3, 9, 10, 13]
-    ):
-        reply_type = response.getlayer(ICMP).type
-        reply_code = response.getlayer(ICMP).code
-
-        result = PortScanICMPResult(
-            ip=ip,
-            reply_type=reply_type,
-            reply_code=reply_code,
-            message="Not responding"
-        )
-
     else:
         reply_type = response.getlayer(ICMP).type
         reply_code = response.getlayer(ICMP).code
 
-        result = PortScanICMPResult(
-            ip=ip,
-            reply_type=reply_type,
-            reply_code=reply_code,
-            message="Up"
-        )
+        if reply_type == 3 and reply_code in [1, 2, 3, 9, 10, 13]:
+            return PingScanResult(
+                ip=ip,
+                reply_type=reply_type,
+                reply_code=reply_code,
+                message="Not responding"
+            )
 
-    result_list.append(result)
-
-
-def port_scan_ping(network: IPv4Network) -> List[PortScanICMPResult]:
-    manager = Manager()
-    result = manager.list()
-    tasks = []
-
-    for ip_address in network.hosts():
-        task = Process(target=_port_scan_ping, args=(ip_address, result))
-        tasks.append(task)
-        task.start()
-
-    for task in tasks:
-        task.join()
-
-    return result
+        else:
+            return PingScanResult(
+                ip=ip,
+                reply_type=reply_type,
+                reply_code=reply_code,
+                message="Up"
+            )
