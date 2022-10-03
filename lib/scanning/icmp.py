@@ -3,33 +3,62 @@ from scapy.all import ICMP, IP, sr1
 
 
 class PingScanResult():
+    """
+    Represents the result of a ping scan.
+
+
+    Attributes
+    ==========
+
+    * ip (IPv4Address): IPv4 address of the target of the ping scan.
+        
+    * reply_type (int): ICMP type number of the reply.
+
+    * reply_code (int): ICMP code number according to the type number.
+
+    * result (str): result of the ping scan.
+    
+    """
+
+    RESULTS = {
+        0: 'UP',
+        1: 'DOWN OR BLOCKED',
+        2: 'BLOCKED'
+    }
 
     def __init__(
         self,
         ip: IPv4Address = IPv4Address("127.0.0.1"),
-        reply_type: int = 0,
-        reply_code: int = 0,
-        message: str = "Not responding"
+        reply_type: int = -1,
+        reply_code: int = -1,
+        result: int = 0
     ):
         self.ip = ip
         self.type = reply_type
         self.code = reply_code
-        self.message = message
+        self.result = result
 
     def __str__(self):
-        return f"{str(self.ip)} --> {self.message}"
+        return f"{str(self.ip)} --> {self.get_result_verbose()}"
+
+    def get_result_verbose(self):
+        return self.RESULTS[self.result]
 
 
 def ping_scan(ip: IPv4Address) -> PingScanResult:
     """
-    Executa port scan on a target host with the given IP address using an
-    ICMP echo request.
+    Execute a ping scan on a target with the given IP address.
 
-    Args:
-        ip (IPv4Address): IPv4 address of the target host.
+    Args
+    ====
 
-    Returns:
-        PortScanResult: Result of the port scan.
+    * ip (IPv4Address): IPv4 address of the target.
+
+    Returns
+    =======
+
+    PortScanResult: Result of the port scan.
+    
     """
 
     # IPv4Address of the target host.
@@ -49,7 +78,9 @@ def ping_scan(ip: IPv4Address) -> PingScanResult:
     if response is None:
         return PingScanResult(
             ip=ip,
+            result=1
         )
+        
     else:
         reply_type = response.getlayer(ICMP).type
         reply_code = response.getlayer(ICMP).code
@@ -59,7 +90,7 @@ def ping_scan(ip: IPv4Address) -> PingScanResult:
                 ip=ip,
                 reply_type=reply_type,
                 reply_code=reply_code,
-                message="Not responding"
+                result=2
             )
 
         else:
@@ -67,5 +98,5 @@ def ping_scan(ip: IPv4Address) -> PingScanResult:
                 ip=ip,
                 reply_type=reply_type,
                 reply_code=reply_code,
-                message="Up"
+                result=0
             )
