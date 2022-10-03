@@ -16,16 +16,19 @@ class MainWindow(QMainWindow):
         self.RootWidget = RootWidget()
         self.setCentralWidget(self.RootWidget)
 
-#testing, will delete later
+
+# testing, will delete later
 from lib.domainresearch.nslookup import *
-res = lookupNsRecord("kdg.be")
+
+res = lookupRecord("kdg.be", dns.rdatatype.AAAA)
 if res is not None:
     for re in res:
         if re.rdtype == dns.rdatatype.MX:
             print(re.exchange)
         else:
             print(re)
-
+else:
+    print("No records found")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
