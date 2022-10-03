@@ -4,6 +4,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from lib.sniffing import getInterfaces
 from workers.sniffing_worker import SniffingWorker
 
+itemBuffer = []
+maxItemsBeforeFlush = 20
+
 
 class SniffingTab(QWidget):
 
@@ -126,8 +129,14 @@ class SniffingTab(QWidget):
         QThreadPool.globalInstance().start(worker)
 
     def handlePacket(self, packet):
-        self.listWidget.addItem(str(packet))
-        self.listWidget.scrollToBottom()
+        # Creating item chunks before adding item to widget
+        if len(itemBuffer) < maxItemsBeforeFlush:
+            itemBuffer.append(packet)
+        else:
+            # If buffer is full:
+            self.listWidget.addItems(itemBuffer)
+            self.listWidget.scrollToBottom()
+            itemBuffer.clear()
 
     # Button on click event
     # Triggers wrapper function above
@@ -135,4 +144,4 @@ class SniffingTab(QWidget):
         self.pushButton_StartSniffing.clicked.connect(self.handle_scan_start)
 
     def stopSniffingAllPackets(self):
-        self.pushButton_StopSniffing.clicked.connect(continueSniff=False)
+        self.pushButton_StopSniffing.clicked.connect()
