@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QTabWidget
 
-from ui.tabs import FootprintingTab, HomeTab, SniffingTab, NslookupTab
+from ui.tabs import FootprintingTab, HomeTab, SniffingTab, NslookupTab, PortScanningTab, NetworkScanningTab
 
 
 class RootWidget(QTabWidget):
@@ -16,9 +16,11 @@ class RootWidget(QTabWidget):
         self.ScanningTab = NetworkScanningTab()
         self.PortScanningTab = PortScanningTab()
         self.NslookupTab = NslookupTab()
+        self.SniffingTab = SniffingTab()
 
         self.addTab(self.HomeTab, 'Home')
         self.addTab(self.FootprintingTab, 'Footprinting')
         self.addTab(self.ScanningTab, 'Network scanning')
         self.addTab(self.PortScanningTab, 'Port scanning')
         self.addTab(self.NslookupTab, 'Nslookup')
+        self.addTab(self.SniffingTab, 'Sniffing')
