@@ -1,8 +1,5 @@
-import argparse, psutil
+import psutil
 from scapy.all import *
-from psutil._compat import basestring
-from scapy.all import *
-from scapy.modules.six import StringIO
 
 
 # Get every interface from host
