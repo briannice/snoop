@@ -26,7 +26,7 @@ class NslookupTab(QWidget):
 
         # possible options
 
-        self.Checkboxes = [QCheckBox("NS"), QCheckBox("A"), QCheckBox("AAAA"), QCheckBox("MX")]
+        self.Checkboxes = [QCheckBox("NS"), QCheckBox("A"), QCheckBox("AAAA"), QCheckBox("MX"), QCheckBox("SOA")]
 
         self.CheckBoxInput = QHBoxLayout()
 
@@ -58,14 +58,16 @@ class NslookupTab(QWidget):
         for checkbox in range(len(self.Checkboxes)):
             if self.Checkboxes[checkbox].checkState() == Qt.Checked:
                 rdataCheckbox = dns.rdatatype.from_text(self.Checkboxes[checkbox].text())
-                self.handle_result_search_domain(lookupRecord(domain, rdataCheckbox))
+                self.handle_result_search_domain(lookupRecord(domain, rdataCheckbox), rdataCheckbox)
 
-    def handle_result_search_domain(self, result: dns.rrset):
-        #todo: when MX type, value gets shown as well so maybe fix?
+    def handle_result_search_domain(self, result: dns.rrset, searchType: dns.rdatatype.RdataType):
         if result is not None:
             for re in result:
-                typeData = dns.rdatatype.to_text(re.rdtype)
-                self.Result.append(typeData + ": " + str(re))
+                typeData = dns.rdatatype.to_text(searchType)
+                if re.rdtype == dns.rdatatype.MX:
+                    self.Result.append(typeData + ": " + str(re.exchange))
+                else:
+                    self.Result.append(typeData + ": " + str(re))
         else:
-            #todo: fix to show what kind of record hasnt been found (right now return of None but need to change)
-            self.Result.append("No records found")
+            typeData = dns.rdatatype.to_text(searchType)
+            self.Result.append(typeData + ": " + "No records found")
