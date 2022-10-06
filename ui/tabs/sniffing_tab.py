@@ -1,9 +1,11 @@
-import pyshark
+from PyQt5.QtCore import QThreadPool
 from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout, QVBoxLayout, QListWidgetItem
 from PyQt5 import QtCore, QtGui, QtWidgets
-from lib.sniffing import *
+from lib.sniffing import getInterfaces
+from workers.sniffing_worker import SniffingWorker
 
-continueSniff = True
+itemBuffer = []
+maxItemsBeforeFlush = 20
 
 
 class SniffingTab(QWidget):
@@ -113,33 +115,33 @@ class SniffingTab(QWidget):
         self.Layout = QGridLayout()
         self.setLayout(self.Layout)
 
-        #
-        sniffer = Sniffer()
-        self.fillInterfaces(sniffer)
+        self.fillInterfaces(getInterfaces())
         self.startSniffingAllPackets()
 
     # Vullen van interfaces in de GUI
-    def fillInterfaces(self, sniffer):
-        interfaces = sniffer.getInterfaces()
+    def fillInterfaces(self, interfaces):
         self.comboBox_Interfaces.clear()
         self.comboBox_Interfaces.addItems(interfaces)
 
-    # Functie die wordt gecalled wanneer er op start scanning wordt gedrukt
-    def wrapperStart(self):
-        inter = self.comboBox_Interfaces.currentText()
-        while True:
-            capture = pyshark.LiveCapture(interface=inter, only_summaries=True)
-            capture.sniff(packet_count=50)
-            for pkt in capture:
-                self.listWidget.addItem(str(pkt))
+    def handle_scan_start(self):
+        worker = SniffingWorker(self.comboBox_Interfaces.currentText())
+        worker.signals.result.connect(self.handlePacket)
+        QThreadPool.globalInstance().start(worker)
+
+    def handlePacket(self, packet):
+        # Creating item chunks before adding item to widget
+        if len(itemBuffer) < maxItemsBeforeFlush:
+            itemBuffer.append(packet)
+        else:
+            # If buffer is full:
+            self.listWidget.addItems(itemBuffer)
             self.listWidget.scrollToBottom()
-            if not continueSniff:
-                break
+            itemBuffer.clear()
 
     # Button on click event
     # Triggers wrapper function above
     def startSniffingAllPackets(self):
-        self.pushButton_StartSniffing.clicked.connect(self.wrapperStart)
+        self.pushButton_StartSniffing.clicked.connect(self.handle_scan_start)
 
     def stopSniffingAllPackets(self):
-        self.pushButton_StopSniffing.clicked.connect(continueSniff=False)
+        self.pushButton_StopSniffing.clicked.connect()

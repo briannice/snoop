@@ -1,1 +1,1 @@
-from .sniffing import Sniffer
+from .sniffing import getInterfaces, sniffAllPackets
