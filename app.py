@@ -1,9 +1,8 @@
-import sys
-
-import dns.rdatatype
-from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget
+from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from ui.root_widget import RootWidget
+import sys
+sys.setrecursionlimit(10000)
 
 
 class MainWindow(QMainWindow):
@@ -16,6 +15,7 @@ class MainWindow(QMainWindow):
         self.RootWidget = RootWidget()
         self.setCentralWidget(self.RootWidget)
         self.setContentsMargins(5, 5, 5, 5)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
