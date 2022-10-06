@@ -61,50 +61,42 @@ class TCPScanResult():
         "CWR": 0x80
     }
 
-    SCAPY_FLAGS = {
-        'F': 'FIN',
-        'S': 'SYN',
-        'R': 'RST',
-        'P': 'PSH',
-        'A': 'ACK',
-        'U': 'URG',
-        'E': 'ECE',
-        'C': 'CWR',
-    }
-
     def __init__(
         self,
-        source_ip: IPv4Address,
         dest_ip: IPv4Address,
-        source_port: int,
         dest_port: int,
-        scapy_flags: int,
-        port_state: PortState
+        flags: int,
+        port_state: PortState,
+        scan_type: str
     ):
-        self.source_ip = source_ip
         self.dest_ip = dest_ip
-        self.source_port = source_port
         self.dest_port = dest_port
-        self.flags = self.initialise_flags(scapy_flags)
         self.port_state = port_state
+        self.flags = flags
+        self.scan_type = scan_type
 
     def __str__(self) -> str:
-        return f"[TCP] - {self.port_state} - {self.flags} - {self.get_flags_list()}"
+        return f"[TCP {self.scan_type}] {self.dest_ip}:{self.dest_port} - {self.port_state}"
 
     def get_flags_list(self):
         flags = self.flags
-        flags_list = list(self.TCP_FLAGS.keys())
         result = []
-
-        for i in range(len(flags_list)):
+        for key in self.TCP_FLAGS.keys():
             if flags & 1:
-                result.append(flags_list[i])
+                result.append(key)
             flags = flags >> 1
-
         return result
 
-    def initialise_flags(self, scapy_flags):
-        result = 0b0
-        for f in scapy_flags:
-            result |= self.TCP_FLAGS[self.SCAPY_FLAGS[f]]
-        return result
+
+def ICMPScanResult():
+
+    def __init__(
+        self,
+        dest_ip: IPv4Address,
+        icmp_type: int,
+        icmp_code: int,
+    ):
+        pass
+
+    def __str__(self):
+        pass

@@ -39,28 +39,6 @@ _TCP_FLAGS_LIST = [
 ]
 
 
-class PortScanTCPResult():
-
-    def __init__(
-        self,
-        ip: IPv4Address = IPv4Address("127.0.0.1"),
-        port: int = 0,
-        flag: int = 0x00,
-        flags: List[str] = ["NULL"],
-        result: str = "FILTERED",
-        scan_type: str = "OPEN"
-    ):
-        self.ip = ip
-        self.port = port
-        self.flag = flag
-        self.flags = flags
-        self.result = result
-        self.scan_type = scan_type
-
-    def __str__(self):
-        return f"[TCP {self.scan_type}] - {self.ip}:{self.port} - {self.result} - {self.flags} - {hex(self.flag)}"
-
-
 def _create_flag_list(flag: int) -> List[str]:
     result = []
     for f in flag:
