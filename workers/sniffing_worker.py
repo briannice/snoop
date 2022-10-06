@@ -5,16 +5,30 @@ from .signals.sniffing_signals import WorkerSignals
 
 class SniffingWorker(QRunnable):
 
-    def __init__(self, interface, *args, **kwargs):
+    def __init__(self, interface, protocol, *args, **kwargs):
         super(SniffingWorker, self).__init__()
         super().__init__(*args, **kwargs)
         self.interface = interface
+        # 0=BOTH, 1=TCP, 2=UDP
+        self.protocol = protocol
         self.signals = WorkerSignals()
         self.running = True
 
     @pyqtSlot()
     def run(self):
-        sniffAllPackets(self.interface, self.handlePacket)
+        match self.protocol:
+            # Both
+            case 0:
+                print("Both (worker)")
+                sniffAllPackets(self.interface, self.handlePacket)
+            # TCP
+            case 1:
+                print("TCP (worker)")
+                sniff_only_tcp_packets(self.interface, self.handlePacket)
+            # UDP
+            case 2:
+                print("UDP (worker)")
+                sniff_only_udp_packets(self.interface, self.handlePacket)
 
     # WHAT to display
     # Emits signal summary of packet

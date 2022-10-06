@@ -34,6 +34,7 @@ class SniffingTab(QWidget):
         self.radioButton_both = QtWidgets.QRadioButton(self)
         self.radioButton_both.setGeometry(QtCore.QRect(170, 170, 51, 20))
         self.radioButton_both.setObjectName("radioButton_both")
+        self.radioButton_both.setChecked(True)
 
         self.listWidget = QtWidgets.QListWidget(self)
         self.listWidget.setGeometry(QtCore.QRect(50, 230, 901, 481))
@@ -58,7 +59,7 @@ class SniffingTab(QWidget):
         self.pushButton_clear_screen.setGeometry(QtCore.QRect(800, 720, 151, 31))
         self.pushButton_clear_screen.setObjectName("pushButton_clear_screen")
         self.label_status = QtWidgets.QLabel(self)
-        self.label_status.setGeometry(QtCore.QRect(855, 210, 141, 21))
+        self.label_status.setGeometry(QtCore.QRect(175, 210, 141, 16))
         self.label_status.setObjectName("label_status")
 
         # Retranslate objects
@@ -70,21 +71,31 @@ class SniffingTab(QWidget):
         self.radioButton_UDP.setText(_translate("Form", "UDP"))
         self.radioButton_both.setText(_translate("Form", "Both"))
         self.label_output.setText(_translate("Form", "Output packets:"))
-        self.label_title.setText(_translate("Form", "Network sniffer: sniff packets on your local network"))
+        self.label_title.setText(_translate("Form", "Network sniffer: sniff packets on your local NIC"))
         self.pushButton_start_sniffing.setText(_translate("Form", "Start sniffing"))
         self.pushButton_stop_sniffing.setText(_translate("Form", "Stop Sniffing"))
         self.pushButton_clear_screen.setText(_translate("Form", "Clear screen"))
         self.label_status.setText(_translate("Form", "Status: stopped"))
+
+        self.label_status.setObjectName("label_status")
+        self.label_status.setStyleSheet('QLabel#label_status {color: red}')
 
         # Post initialization
         self.Label = QLabel("Scanning")
         self.Layout = QGridLayout()
         self.setLayout(self.Layout)
 
-        self.sniffing_worker = SniffingWorker(self.comboBox_interfaces.currentText())
+        # Default both
+        self.sniffing_worker = SniffingWorker(self.comboBox_interfaces.currentText(), protocol=0)
+        self.pushButton_stop_sniffing.setDisabled(True)
+        self.both_button_event()
+        self.udp_button_event()
+        self.tcp_button_event()
+
         self.fill_interfaces(getInterfaces())
         self.start_sniffing_all_packets()
         self.stop_sniffing_all_packets()
+        self.clear_screen_event()
 
     # Fill interfaces in UI combobox
     def fill_interfaces(self, interfaces):
@@ -109,7 +120,11 @@ class SniffingTab(QWidget):
         self.sniffing_worker.signals.result.connect(self.handle_packet)
         # Add worker to threadpool
         QThreadPool.globalInstance().start(self.sniffing_worker)
+        # User experience
+        self.pushButton_start_sniffing.setDisabled(True)
+        self.pushButton_stop_sniffing.setDisabled(False)
         self.label_status.setText("Status: sniffing")
+        self.label_status.setStyleSheet('QLabel#label_status {color: blue}')
 
     # Start button function
     # Triggers wrapper function above
@@ -118,8 +133,39 @@ class SniffingTab(QWidget):
 
     def worker_stop(self):
         self.sniffing_worker.stopPacket()
+        # User experience
+        self.pushButton_start_sniffing.setDisabled(False)
+        self.pushButton_stop_sniffing.setDisabled(True)
         self.label_status.setText("Status: stopped")
+        self.label_status.setStyleSheet('QLabel#label_status {color: red}')
 
     # Stop button function
     def stop_sniffing_all_packets(self):
         self.pushButton_stop_sniffing.clicked.connect(self.worker_stop)
+
+    # Clear list
+    def clear_screen(self):
+        self.listWidget.clear()
+
+    def clear_screen_event(self):
+        self.pushButton_clear_screen.clicked.connect(self.clear_screen)
+
+    # FILTERING ###############################
+    def change_worker_to_protocol(self):
+        if self.radioButton_both.isChecked():
+            self.worker_stop()
+            self.sniffing_worker = SniffingWorker(self.comboBox_interfaces.currentText(), protocol=0)
+            print("Both")
+        if self.radioButton_TCP.isChecked():
+            self.worker_stop()
+            self.sniffing_worker = SniffingWorker(self.comboBox_interfaces.currentText(), protocol=1)
+            print("TCP")
+        if self.radioButton_UDP.isChecked():
+            self.worker_stop()
+            self.sniffing_worker = SniffingWorker(self.comboBox_interfaces.currentText(), protocol=2)
+            print("UDP")
+
+    # Event handlers for protocol radiobutton(s)
+    def both_button_event(self): self.radioButton_both.clicked.connect(self.change_worker_to_protocol)
+    def tcp_button_event(self): self.radioButton_TCP.clicked.connect(self.change_worker_to_protocol)
+    def udp_button_event(self): self.radioButton_UDP.clicked.connect(self.change_worker_to_protocol)
