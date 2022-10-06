@@ -22,8 +22,8 @@ class PingScanResult():
 
     RESULTS = {
         0: 'UP',
-        1: 'DOWN OR BLOCKED',
-        2: 'BLOCKED'
+        1: 'BLOCKED',
+        2: 'DOWN OR BLOCKED',
     }
 
     def __init__(
@@ -64,7 +64,6 @@ def ping_scan(ip: IPv4Address) -> PingScanResult:
     # IPv4Address of the target host.
     ip_dst = str(ip)
 
-    # Type of the ICMP packet.
     # Echo request has type 8.
     icmp_type = 8
 
@@ -74,26 +73,32 @@ def ping_scan(ip: IPv4Address) -> PingScanResult:
     # Send packet and wait for first response.
     response = sr1(packet, timeout=2, verbose=0)
 
-    #
+    # If there is no response, the packet is filtered by a firewall or blocked
+    # by a firewall, router or target.
     if response is None:
         return PingScanResult(
             ip=ip,
-            result=1
+            result=2,
         )
         
     else:
         reply_type = response.getlayer(ICMP).type
         reply_code = response.getlayer(ICMP).code
 
+        # If the type of the response is 3, then a firewall, router or the host
+        # has blocked the packet and has responded with an ICMP Destionation
+        # Unreachable message.
         if reply_type == 3 and reply_code in [1, 2, 3, 9, 10, 13]:
             return PingScanResult(
                 ip=ip,
                 reply_type=reply_type,
                 reply_code=reply_code,
-                result=2
+                result=1
             )
 
-        else:
+        # The target has responded with an ICMP Echo Reply to indicate the
+        # Echo Request was successfull.
+        if reply_type == 0:
             return PingScanResult(
                 ip=ip,
                 reply_type=reply_type,
