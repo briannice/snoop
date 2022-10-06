@@ -9,8 +9,6 @@ from lib.scanning import ping_scan, PingScanResult
 from .worker_signals import WorkerSignals
 
 
-
-
 class NetworkScanningWorker(QRunnable):
     """
     Worker to perform a network scan in a separate thread.
@@ -26,8 +24,8 @@ class NetworkScanningWorker(QRunnable):
     """
 
     def __init__(
-        self,
-        network: IPv4Network = IPv4Network("192.168.1.0/24")
+            self,
+            network: IPv4Network = IPv4Network("192.168.1.0/24")
     ):
         super(NetworkScanningWorker, self).__init__()
         self.network = network

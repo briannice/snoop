@@ -1,11 +1,11 @@
 from PyQt5.QtCore import QThreadPool
-from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout, QVBoxLayout, QListWidgetItem
+from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout, QListView, QListWidgetItem, QListWidget
 from PyQt5 import QtCore, QtGui, QtWidgets
 from lib.sniffing import getInterfaces
 from workers.sniffing_worker import SniffingWorker
 
 itemBuffer = []
-maxItemsBeforeFlush = 20
+maxItemsBeforeFlush = 2
 
 
 class SniffingTab(QWidget):
@@ -13,122 +13,86 @@ class SniffingTab(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Setup
-        self.setObjectName("SniffingTab")
+        self.setObjectName("Form")
         self.resize(1000, 800)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
-        self.setSizePolicy(sizePolicy)
         self.setMinimumSize(QtCore.QSize(1000, 800))
-        self.horizontalLayoutWidget = QtWidgets.QWidget(self)
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(30, 30, 931, 51))
-        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.label_info = QtWidgets.QLabel(self.horizontalLayoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_info.sizePolicy().hasHeightForWidth())
-        self.label_info.setSizePolicy(sizePolicy)
-        self.label_info.setMinimumSize(QtCore.QSize(100, 0))
-        font = QtGui.QFont()
-        font.setPointSize(8)
-        self.label_info.setFont(font)
-        self.label_info.setObjectName("label_info")
-        self.horizontalLayout.addWidget(self.label_info)
-        self.comboBox_Interfaces = QtWidgets.QComboBox(self.horizontalLayoutWidget)
-        self.comboBox_Interfaces.setObjectName("comboBox_Interfaces")
-        self.horizontalLayout.addWidget(self.comboBox_Interfaces)
-        self.horizontalLayoutWidget_2 = QtWidgets.QWidget(self)
-        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(30, 740, 931, 41))
-        self.horizontalLayoutWidget_2.setObjectName("horizontalLayoutWidget_2")
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_2)
-        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.pushButton_StartSniffing = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
-        self.pushButton_StartSniffing.setObjectName("pushButton_StartSniffing")
-        self.horizontalLayout_2.addWidget(self.pushButton_StartSniffing)
-        self.pushButton_StopSniffing = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
-        self.pushButton_StopSniffing.setObjectName("pushButton_StopSniffing")
-        self.horizontalLayout_2.addWidget(self.pushButton_StopSniffing)
-        self.horizontalLayoutWidget_3 = QtWidgets.QWidget(self)
-        self.horizontalLayoutWidget_3.setGeometry(QtCore.QRect(30, 90, 931, 51))
-        self.horizontalLayoutWidget_3.setObjectName("horizontalLayoutWidget_3")
-        self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_3)
-        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.label_protocols = QtWidgets.QLabel(self.horizontalLayoutWidget_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_protocols.sizePolicy().hasHeightForWidth())
-        self.label_protocols.setSizePolicy(sizePolicy)
-        self.label_protocols.setMinimumSize(QtCore.QSize(100, 0))
-        font = QtGui.QFont()
-        font.setPointSize(8)
-        self.label_protocols.setFont(font)
-        self.label_protocols.setObjectName("label_protocols")
-        self.horizontalLayout_3.addWidget(self.label_protocols)
-        self.radioButton_TCP = QtWidgets.QRadioButton(self.horizontalLayoutWidget_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.radioButton_TCP.sizePolicy().hasHeightForWidth())
-        self.radioButton_TCP.setSizePolicy(sizePolicy)
-        self.radioButton_TCP.setCheckable(True)
+        self.label_choose_interface = QtWidgets.QLabel(self)
+        self.label_choose_interface.setGeometry(QtCore.QRect(50, 80, 141, 16))
+        self.label_choose_interface.setObjectName("label_choose_interface")
+        self.comboBox_interfaces = QtWidgets.QComboBox(self)
+        self.comboBox_interfaces.setGeometry(QtCore.QRect(50, 100, 901, 22))
+        self.comboBox_interfaces.setObjectName("comboBox_interfaces")
+        self.label_choose_protocol = QtWidgets.QLabel(self)
+        self.label_choose_protocol.setGeometry(QtCore.QRect(50, 140, 181, 16))
+        self.label_choose_protocol.setObjectName("label_choose_protocol")
+        self.radioButton_TCP = QtWidgets.QRadioButton(self)
+        self.radioButton_TCP.setGeometry(QtCore.QRect(50, 170, 51, 20))
         self.radioButton_TCP.setObjectName("radioButton_TCP")
-        self.horizontalLayout_3.addWidget(self.radioButton_TCP)
-        self.radioButton_UDP = QtWidgets.QRadioButton(self.horizontalLayoutWidget_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.radioButton_UDP.sizePolicy().hasHeightForWidth())
-        self.radioButton_UDP.setSizePolicy(sizePolicy)
+        self.radioButton_UDP = QtWidgets.QRadioButton(self)
+        self.radioButton_UDP.setGeometry(QtCore.QRect(110, 170, 51, 20))
         self.radioButton_UDP.setObjectName("radioButton_UDP")
-        self.horizontalLayout_3.addWidget(self.radioButton_UDP)
-        self.radioButton_Both = QtWidgets.QRadioButton(self.horizontalLayoutWidget_3)
-        self.radioButton_Both.setChecked(True)
-        self.radioButton_Both.setObjectName("radioButton_Both")
-        self.horizontalLayout_3.addWidget(self.radioButton_Both)
+        self.radioButton_both = QtWidgets.QRadioButton(self)
+        self.radioButton_both.setGeometry(QtCore.QRect(170, 170, 51, 20))
+        self.radioButton_both.setObjectName("radioButton_both")
 
         self.listWidget = QtWidgets.QListWidget(self)
-        self.listWidget.setGeometry(QtCore.QRect(30, 130, 931, 591))
+        self.listWidget.setGeometry(QtCore.QRect(50, 230, 901, 481))
         self.listWidget.setObjectName("listWidget")
 
-        # Retranslate
+        self.label_output = QtWidgets.QLabel(self)
+        self.label_output.setGeometry(QtCore.QRect(50, 210, 181, 16))
+        self.label_output.setObjectName("label_output")
+        self.label_title = QtWidgets.QLabel(self)
+        self.label_title.setGeometry(QtCore.QRect(50, 40, 411, 16))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.label_title.setFont(font)
+        self.label_title.setObjectName("label_title")
+        self.pushButton_start_sniffing = QtWidgets.QPushButton(self)
+        self.pushButton_start_sniffing.setGeometry(QtCore.QRect(50, 720, 281, 31))
+        self.pushButton_start_sniffing.setObjectName("pushButton_start_sniffing")
+        self.pushButton_stop_sniffing = QtWidgets.QPushButton(self)
+        self.pushButton_stop_sniffing.setGeometry(QtCore.QRect(350, 720, 281, 31))
+        self.pushButton_stop_sniffing.setObjectName("pushButton_stop_sniffing")
+        self.pushButton_clear_screen = QtWidgets.QPushButton(self)
+        self.pushButton_clear_screen.setGeometry(QtCore.QRect(800, 720, 151, 31))
+        self.pushButton_clear_screen.setObjectName("pushButton_clear_screen")
+        self.label_status = QtWidgets.QLabel(self)
+        self.label_status.setGeometry(QtCore.QRect(855, 210, 141, 21))
+        self.label_status.setObjectName("label_status")
+
+        # Retranslate objects
         _translate = QtCore.QCoreApplication.translate
-        self.setWindowTitle(_translate("SniffingTab", "Form"))
-        self.label_info.setText(_translate("SniffingTab", "Choose interface"))
-        self.pushButton_StartSniffing.setText(_translate("SniffingTab", "Start sniffing"))
-        self.pushButton_StopSniffing.setText(_translate("SniffingTab", "Stop Sniffing"))
-        self.label_protocols.setText(_translate("SniffingTab", "Protocol settings"))
-        self.radioButton_TCP.setText(_translate("SniffingTab", "TCP"))
-        self.radioButton_UDP.setText(_translate("SniffingTab", "UDP"))
-        self.radioButton_Both.setText(_translate("SniffingTab", "Both"))
+        self.setWindowTitle(_translate("Form", "Form"))
+        self.label_choose_interface.setText(_translate("Form", "Choose your Interface:"))
+        self.label_choose_protocol.setText(_translate("Form", "Choose your protocol settings:"))
+        self.radioButton_TCP.setText(_translate("Form", "TCP"))
+        self.radioButton_UDP.setText(_translate("Form", "UDP"))
+        self.radioButton_both.setText(_translate("Form", "Both"))
+        self.label_output.setText(_translate("Form", "Output packets:"))
+        self.label_title.setText(_translate("Form", "Network sniffer: sniff packets on your local network"))
+        self.pushButton_start_sniffing.setText(_translate("Form", "Start sniffing"))
+        self.pushButton_stop_sniffing.setText(_translate("Form", "Stop Sniffing"))
+        self.pushButton_clear_screen.setText(_translate("Form", "Clear screen"))
+        self.label_status.setText(_translate("Form", "Status: stopped"))
 
         # Post initialization
         self.Label = QLabel("Scanning")
         self.Layout = QGridLayout()
         self.setLayout(self.Layout)
 
-        self.fillInterfaces(getInterfaces())
-        self.startSniffingAllPackets()
+        self.sniffing_worker = SniffingWorker(self.comboBox_interfaces.currentText())
+        self.fill_interfaces(getInterfaces())
+        self.start_sniffing_all_packets()
+        self.stop_sniffing_all_packets()
 
-    # Vullen van interfaces in de GUI
-    def fillInterfaces(self, interfaces):
-        self.comboBox_Interfaces.clear()
-        self.comboBox_Interfaces.addItems(interfaces)
+    # Fill interfaces in UI combobox
+    def fill_interfaces(self, interfaces):
+        self.comboBox_interfaces.clear()
+        self.comboBox_interfaces.addItems(interfaces)
 
-    def handle_scan_start(self):
-        worker = SniffingWorker(self.comboBox_Interfaces.currentText())
-        worker.signals.result.connect(self.handlePacket)
-        QThreadPool.globalInstance().start(worker)
-
-    def handlePacket(self, packet):
+    # For every packet that comes by
+    def handle_packet(self, packet):
         # Creating item chunks before adding item to widget
         if len(itemBuffer) < maxItemsBeforeFlush:
             itemBuffer.append(packet)
@@ -138,10 +102,24 @@ class SniffingTab(QWidget):
             self.listWidget.scrollToBottom()
             itemBuffer.clear()
 
-    # Button on click event
-    # Triggers wrapper function above
-    def startSniffingAllPackets(self):
-        self.pushButton_StartSniffing.clicked.connect(self.handle_scan_start)
+    # Creating worker to do packet handling
+    # Wrapper function for start button
+    def worker_start(self):
+        # Call function "handlePacket" when clicking on start button
+        self.sniffing_worker.signals.result.connect(self.handle_packet)
+        # Add worker to threadpool
+        QThreadPool.globalInstance().start(self.sniffing_worker)
+        self.label_status.setText("Status: sniffing")
 
-    def stopSniffingAllPackets(self):
-        self.pushButton_StopSniffing.clicked.connect()
+    # Start button function
+    # Triggers wrapper function above
+    def start_sniffing_all_packets(self):
+        self.pushButton_start_sniffing.clicked.connect(self.worker_start)
+
+    def worker_stop(self):
+        self.sniffing_worker.stopPacket()
+        self.label_status.setText("Status: stopped")
+
+    # Stop button function
+    def stop_sniffing_all_packets(self):
+        self.pushButton_stop_sniffing.clicked.connect(self.worker_stop)

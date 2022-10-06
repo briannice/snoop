@@ -1,9 +1,6 @@
-# Standard lib
 from lib.sniffing import *
 from PyQt5.QtCore import QRunnable, pyqtSlot
-
-from lib.scanning import ping_scan, PingScanResult
-from .worker_signals import WorkerSignals
+from .signals.sniffing_signals import WorkerSignals
 
 
 class SniffingWorker(QRunnable):
@@ -13,10 +10,23 @@ class SniffingWorker(QRunnable):
         super().__init__(*args, **kwargs)
         self.interface = interface
         self.signals = WorkerSignals()
+        self.running = True
 
     @pyqtSlot()
     def run(self):
         sniffAllPackets(self.interface, self.handlePacket)
 
+    # WHAT to display
+    # Emits signal summary of packet
+    @pyqtSlot()
     def handlePacket(self, packet):
-        self.signals.result.emit(packet.summary())
+        if self.running:
+            self.signals.result.emit(packet.summary())
+        else:
+            # Reset variable
+            self.running = True
+            # Exit thread
+            exit()
+
+    def stopPacket(self):
+        self.running = False
