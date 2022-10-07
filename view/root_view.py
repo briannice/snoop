@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QTabWidget
 
 from model import NetworkScanningModel, PortScanningModel
-from presenter import NetworkScanningPresenter, PortScanningPresenter, network_scanning_presenter
+from presenter import NetworkScanningPresenter, PortScanningPresenter
 from view import NetworkScanningView, PortScanningView
 
 
