@@ -1,7 +1,7 @@
-from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QLineEdit
 
 
-class ButtonWidget(QPushButton):
+class TextInputWidget(QLineEdit):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
