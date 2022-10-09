@@ -5,13 +5,14 @@ from view import PortScanningView
 class PortScanningPresenter():
 
     def __init__(self, view: PortScanningView, model: PortScanningModel):
-        self.view = view
-        self.model = model
-        self._add_event_handlers()
-        self._update_view()
+        self.__view = view
+        self.__model = model
 
-    def _add_event_handlers(self):
+        self.__add_event_handlers()
+        self.__update_view()
+
+    def __add_event_handlers(self):
         pass
 
-    def _update_view(self):
+    def __update_view(self):
         pass

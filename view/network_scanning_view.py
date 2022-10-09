@@ -1,4 +1,4 @@
-from widgets import ButtonWidget, GroupWidget, HLineWidget, LabelWidget, TabWidget
+from widgets import ButtonWidget, HLineWidget, LabelWidget, TabWidget
 from widgets.input import CheckboxInputWidget, TextInputWidget
 from widgets.layout import GLayoutWidget, HLayoutWidget, VLayoutWidget
 
@@ -9,54 +9,54 @@ class NetworkScanningView(TabWidget):
         super().__init__(*args, **kwargs)
 
         # Select network
-        self.SelectNetworkLabel = LabelWidget("Network")
-        self.SelectNetworkTextInput = TextInputWidget()
+        self.__SelectNetworkLabel = LabelWidget("Network")
+        self.__SelectNetworkTextInput = TextInputWidget()
 
-        self.SelectNetworkLayout = HLayoutWidget()
-        self.SelectNetworkLayout.addWidget(self.SelectNetworkLabel)
-        self.SelectNetworkLayout.addWidget(self.SelectNetworkTextInput)
+        self.__SelectNetworkLayout = HLayoutWidget()
+        self.__SelectNetworkLayout.addWidget(self.__SelectNetworkLabel)
+        self.__SelectNetworkLayout.addWidget(self.__SelectNetworkTextInput)
 
         # Select packets
-        self.SelectPacketsPingLabel = LabelWidget("Ping")
-        self.SelectPacketsSshLabel = LabelWidget("SSH")
-        self.SelectPacketsHttpLabel = LabelWidget("HTTP")
-        self.SelectPacketsHttpsLabel = LabelWidget("HTTPS")
+        self.__SelectPacketsPingLabel = LabelWidget("Ping")
+        self.__SelectPacketsSshLabel = LabelWidget("SSH")
+        self.__SelectPacketsHttpLabel = LabelWidget("HTTP")
+        self.__SelectPacketsHttpsLabel = LabelWidget("HTTPS")
 
-        self.SelectPacketsPingCheckbox = CheckboxInputWidget()
-        self.SelectPacketsSshCheckbox = CheckboxInputWidget()
-        self.SelectPacketsHttpCheckbox = CheckboxInputWidget()
-        self.SelectPacketsHttpsCheckbox = CheckboxInputWidget()
+        self.__SelectPacketsPingCheckbox = CheckboxInputWidget()
+        self.__SelectPacketsSshCheckbox = CheckboxInputWidget()
+        self.__SelectPacketsHttpCheckbox = CheckboxInputWidget()
+        self.__SelectPacketsHttpsCheckbox = CheckboxInputWidget()
 
-        self.SelectPacketsLayout = GLayoutWidget()
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsPingLabel, 0, 0)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsSshLabel, 0, 1)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsHttpLabel, 0, 2)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsHttpsLabel, 0, 3)
+        self.__SelectPacketsLayout = GLayoutWidget()
+        self.__SelectPacketsLayout.addWidget(self.__SelectPacketsPingLabel, 0, 0)
+        self.__SelectPacketsLayout.addWidget(self.__SelectPacketsSshLabel, 0, 1)
+        self.__SelectPacketsLayout.addWidget(self.__SelectPacketsHttpLabel, 0, 2)
+        self.__SelectPacketsLayout.addWidget(self.__SelectPacketsHttpsLabel, 0, 3)
 
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsPingCheckbox, 1, 0)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsSshCheckbox, 1, 1)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsHttpCheckbox, 1, 2)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsHttpsCheckbox, 1, 3)
+        self.__SelectPacketsLayout.addWidget(self.__SelectPacketsPingCheckbox, 1, 0)
+        self.__SelectPacketsLayout.addWidget(self.__SelectPacketsSshCheckbox, 1, 1)
+        self.__SelectPacketsLayout.addWidget(self.__SelectPacketsHttpCheckbox, 1, 2)
+        self.__SelectPacketsLayout.addWidget(self.__SelectPacketsHttpsCheckbox, 1, 3)
 
         # Buttons
-        self.ButtonScan = ButtonWidget("Start scan")
-        self.ButtonClear = ButtonWidget("Clear output")
+        self.__ButtonScan = ButtonWidget("Start scan")
+        self.__ButtonClear = ButtonWidget("Clear output")
 
-        self.ButtonsLayout = HLayoutWidget()
-        self.ButtonsLayout.addWidget(self.ButtonScan)
-        self.ButtonsLayout.addWidget(self.ButtonClear)
+        self.__ButtonsLayout = HLayoutWidget()
+        self.__ButtonsLayout.addWidget(self.__ButtonScan)
+        self.__ButtonsLayout.addWidget(self.__ButtonClear)
 
         # Result
-        self.OutputLayout = VLayoutWidget()
+        self.__OutputLayout = VLayoutWidget()
 
         # Self
-        self.Layout = VLayoutWidget()
-        self.Layout.addLayout(self.SelectNetworkLayout)
-        self.Layout.addWidget(HLineWidget())
-        self.Layout.addLayout(self.SelectPacketsLayout)
-        self.Layout.addWidget(HLineWidget())
-        self.Layout.addLayout(self.ButtonsLayout)
-        self.Layout.addLayout(self.OutputLayout)
+        self.__Layout = VLayoutWidget()
+        self.__Layout.addLayout(self.__SelectNetworkLayout)
+        self.__Layout.addWidget(HLineWidget())
+        self.__Layout.addLayout(self.__SelectPacketsLayout)
+        self.__Layout.addWidget(HLineWidget())
+        self.__Layout.addLayout(self.__ButtonsLayout)
+        self.__Layout.addLayout(self.__OutputLayout)
 
         # Setup
-        self.setLayout(self.Layout)
+        self.setLayout(self.__Layout)

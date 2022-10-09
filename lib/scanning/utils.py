@@ -26,10 +26,10 @@ class ICMPPacket():
         type: int,
         code: int,
     ):
-        self.type = type
-        self.code = code
-        self.src_ip = src_ip
-        self.dst_ip = dst_ip
+        self.__type = type
+        self.__code = code
+        self.__src_ip = src_ip
+        self.__dst_ip = dst_ip
 
 
 class TCPPacket():
@@ -42,11 +42,11 @@ class TCPPacket():
         dst_port: int,
         flags: int,
     ):
-        self.src_ip = src_ip
-        self.dst_ip = dst_ip
-        self.src_port = src_port
-        self.dst_port = dst_port
-        self.flags = flags
+        self.__src_ip = src_ip
+        self.__dst_ip = dst_ip
+        self.__src_port = src_port
+        self.__dst_port = dst_port
+        self.__flags = flags
 
 
 class ICMPHostScanResult():
@@ -61,8 +61,8 @@ class ICMPHostScanResult():
     ):
         pkt = ICMPPacket(src_ip, dst_ip, type, code)
 
-        self.pkt = pkt
-        self.state = state
+        self.__pkt = pkt
+        self.__state = state
 
 
 class ICMPPortScanResult():
@@ -77,8 +77,8 @@ class ICMPPortScanResult():
     ):
         pkt = ICMPPacket(src_ip, dst_ip, type, code)
 
-        self.pkt = pkt
-        self.state = state
+        self.__pkt = pkt
+        self.__state = state
 
 
 class TCPHostScanResult():
@@ -93,8 +93,8 @@ class TCPHostScanResult():
     ):
         pkt = TCPPacket(src_ip, dst_ip, src_port, dst_port, flags)
 
-        self.pkt = pkt
-        self.state = state
+        self.__pkt = pkt
+        self.__state = state
 
 
 class TCPPortScanResult():
@@ -110,5 +110,5 @@ class TCPPortScanResult():
     ):
         pkt = TCPPacket(src_ip, dst_ip, src_port, dst_port, flags)
 
-        self.pkt = pkt
-        self.state = state
+        self.__pkt = pkt
+        self.__state = state
