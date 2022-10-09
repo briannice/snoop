@@ -1,7 +1,7 @@
-from widgets import TabWidget
+from ui import PortScanningUi
 
 
-class PortScanningView(TabWidget):
+class PortScanningView(PortScanningUi):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

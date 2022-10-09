@@ -1,7 +1,7 @@
-from ui import NetworkScanningUi
+from widgets import TabWidget
 
 
-class NetworkScanningView(NetworkScanningUi):
+class PortScanningUi(TabWidget):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
