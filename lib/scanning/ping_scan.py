@@ -1,7 +1,7 @@
 from ipaddress import IPv4Address
 from scapy.all import ICMP, IP, sr1
 
-from lib.scanning import HostScanResult, HostState, ICMPPacket
+from .utils import HostScanResult, HostState, ICMPPacket
 
 
 def ping_scan(ip: IPv4Address) -> HostScanResult:

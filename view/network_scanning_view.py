@@ -1,8 +1,11 @@
 from typing import List
 
+from PyQt5.QtCore import QThreadPool
+
 from widgets import ButtonWidget, HLineWidget, LabelWidget, TabWidget
 from widgets.input import CheckboxInputWidget, TextInputWidget
 from widgets.layout import GLayoutWidget, HLayoutWidget, VLayoutWidget
+from worker import NetworkScanningWorker
 
 
 class NetworkScanningView(TabWidget):
@@ -70,3 +73,6 @@ class NetworkScanningView(TabWidget):
             self.__SelectPacketsHttpCheckbox,
             self.__SelectPacketsHttpsCheckbox,
         ]
+
+    def get_button_scan(self):
+        return self.__ButtonScan

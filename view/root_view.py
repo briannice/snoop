@@ -13,12 +13,12 @@ class RootView(QTabWidget):
         # Network scanning tab
         network_scanning_model = NetworkScanningModel()
         network_scanning_view = NetworkScanningView()
-        NetworkScanningPresenter(network_scanning_view, network_scanning_model)
+        _ = NetworkScanningPresenter(network_scanning_view, network_scanning_model)
 
         # Port scanning tab
         port_scanning_model = PortScanningModel()
         port_scanning_view = PortScanningView()
-        PortScanningPresenter(port_scanning_view, port_scanning_model)
+        _ = PortScanningPresenter(port_scanning_view, port_scanning_model)
 
         # Setup
         self.addTab(network_scanning_view, "Network scanning")
