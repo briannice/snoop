@@ -1,3 +1,5 @@
+from typing import List
+
 from widgets import ButtonWidget, HLineWidget, LabelWidget, TabWidget
 from widgets.input import CheckboxInputWidget, TextInputWidget
 from widgets.layout import GLayoutWidget, HLayoutWidget, VLayoutWidget
@@ -60,3 +62,11 @@ class NetworkScanningView(TabWidget):
 
         # Setup
         self.setLayout(self.__Layout)
+
+    def get_select_packets_checkboxes(self) -> List[CheckboxInputWidget]:
+        return [
+            self.__SelectPacketsPingCheckbox,
+            self.__SelectPacketsSshCheckbox,
+            self.__SelectPacketsHttpCheckbox,
+            self.__SelectPacketsHttpsCheckbox,
+        ]

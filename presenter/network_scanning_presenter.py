@@ -15,4 +15,7 @@ class NetworkScanningPresenter():
         pass
 
     def __update_view(self):
-        pass
+
+        # Set all checkboxes for packet selection to True
+        for cb in self.__view.get_select_packets_checkboxes():
+            cb.setChecked(True)
