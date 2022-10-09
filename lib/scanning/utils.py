@@ -4,7 +4,7 @@ from ipaddress import IPv4Address
 
 class HostState(Enum):
     UP = "UP"
-    DOWN = "DOWN"
+    BLOCKED = "BLOCKED"
     UNKNOWN = "UNKNOWN"
 
 
@@ -49,66 +49,26 @@ class TCPPacket():
         self.__flags = flags
 
 
-class ICMPHostScanResult():
+class HostScanResult():
 
     def __init__(
         self,
-        state: HostState,
-        src_ip: IPv4Address,
         dst_ip: IPv4Address,
-        type: int,
-        code: int,
+        host_state: HostState,
+        icmp_packet: ICMPPacket,
+        tcp_packet: TCPPacket
     ):
-        pkt = ICMPPacket(src_ip, dst_ip, type, code)
+        self.__host_state = host_state
+        self.__dst_ip = dst_ip
+        self.__icmp_packet = icmp_packet
+        self.__tcp_packet = tcp_packet
 
-        self.__pkt = pkt
-        self.__state = state
+    def __str__(self) -> str:
+        return f"{self.__dst_ip}: {self.__host_state}"
 
-
-class ICMPPortScanResult():
-
-    def __init__(
-        self,
-        state: PortState,
-        src_ip: IPv4Address,
-        dst_ip: IPv4Address,
-        type: int,
-        code: int,
-    ):
-        pkt = ICMPPacket(src_ip, dst_ip, type, code)
-
-        self.__pkt = pkt
-        self.__state = state
-
-
-class TCPHostScanResult():
-    def __init__(
-        self,
-        state: HostState,
-        src_ip: IPv4Address,
-        dst_ip: IPv4Address,
-        src_port: int,
-        dst_port: int,
-        flags: int,
-    ):
-        pkt = TCPPacket(src_ip, dst_ip, src_port, dst_port, flags)
-
-        self.__pkt = pkt
-        self.__state = state
-
-
-class TCPPortScanResult():
-
-    def __init__(
-        self,
-        state: PortState,
-        src_ip: IPv4Address,
-        dst_ip: IPv4Address,
-        src_port: int,
-        dst_port: int,
-        flags: int,
-    ):
-        pkt = TCPPacket(src_ip, dst_ip, src_port, dst_port, flags)
-
-        self.__pkt = pkt
-        self.__state = state
+    def get_packet(self) -> ICMPPacket | TCPPacket | None:
+        if self.__icmp_packet:
+            return self.__icmp_packet
+        if self.__tcp_packet:
+            return self.__tcp_packet
+        return None
