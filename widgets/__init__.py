@@ -4,3 +4,8 @@ from .hline_widget import HLineWidget
 from .label_widget import LabelWidget
 from .tab_widget import TabWidget
 from .text_widget import TextWidget
+from .button_radio import RadioButtonWidget
+from .size_policy_widget import SizePolicyWidget
+from .list_widget import ListWidget
+from .q_rect_widget import QRect
+from .q_size_widget import QSize

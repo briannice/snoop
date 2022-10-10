@@ -1,1 +1,2 @@
 from .network_scanning_signal import NetworkScanningSignal
+from .sniffing_signal import SniffingSignal
