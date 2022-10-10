@@ -13,7 +13,7 @@ class MainWindow(QMainWindow):
         root_view = RootView()
 
         self.setWindowTitle("Snoop")
-        self.setMinimumSize(800, 600)
+        self.setMinimumSize(1000, 800)
         self.setContentsMargins(5, 5, 5, 5)
         self.setCentralWidget(root_view)
 
