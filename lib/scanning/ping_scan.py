@@ -6,8 +6,8 @@ from .utils import HostScanResult, HostState, ICMPPacket
 
 def ping_scan(ip: IPv4Address) -> HostScanResult:
 
-    packet = IP(dst_ip=str(ip)) / ICMP(type=8)
-    res = sr1(packet, timeout=1, verbose=0)
+    packet = IP(dst=str(ip)) / ICMP(type=8)
+    res = sr1(packet, timeout=2, verbose=0)
 
     if res is None:
         return HostScanResult(
@@ -17,9 +17,9 @@ def ping_scan(ip: IPv4Address) -> HostScanResult:
             tcp_packet=None
         )
 
-    if res.haslayer(IP) and res.haslayer(ICMP):
-        ip_src_ip = res.getlayer(IP).src_ip
-        ip_dst_ip = res.getlayer(IP).dst_ip
+    if res.haslayer(ICMP):
+        ip_src_ip = res.getlayer(IP).src
+        ip_dst_ip = res.getlayer(IP).dst
         icmp_type = res.getlayer(ICMP).type
         icmp_code = res.getlayer(ICMP).code
 

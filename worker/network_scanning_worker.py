@@ -1,4 +1,4 @@
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait
 from ipaddress import IPv4Address, IPv4Network
 from typing import List
 
@@ -17,14 +17,13 @@ class NetworkScanningWorker(QRunnable):
 
     @pyqtSlot()
     def run(self):
-        network = IPv4Network("192.168.1.0/24")
-        result = []
-        executor = ThreadPoolExecutor(max_workers=20)
-
-        for host in network.hosts():
-            executor.submit(self.task, host, result)
-
-        print(result)
+        with ThreadPoolExecutor(100) as executor:
+            network = IPv4Network("192.168.1.0/24")
+            result = []
+            futures = [executor.submit(self.task, host, result) for host in network.hosts()]
+            wait(futures)
+            for r in result:
+                print(r)
 
     @staticmethod
     def task(host: IPv4Address, result: List[HostScanResult]):
