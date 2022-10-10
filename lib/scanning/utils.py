@@ -72,3 +72,12 @@ class HostScanResult():
         if self.__tcp_packet:
             return self.__tcp_packet
         return None
+
+    def is_up(self):
+        return self.__host_state == HostState.UP
+
+    def is_unknown(self):
+        return self.__host_state == HostState.UNKNOWN
+
+    def is_blocked(self):
+        return self.__host_state == HostState.BLOCKED

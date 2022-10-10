@@ -5,7 +5,7 @@ from typing import List
 from PyQt5.QtCore import QRunnable, pyqtSlot
 
 from lib.scanning import HostScanResult, ping_scan
-from signal import NetworkScanningSignal
+from signals import NetworkScanningSignal
 
 
 class NetworkScanningWorker(QRunnable):
@@ -22,8 +22,7 @@ class NetworkScanningWorker(QRunnable):
             result = []
             futures = [executor.submit(self.task, host, result) for host in network.hosts()]
             wait(futures)
-            for r in result:
-                print(r)
+            self.signals.data.emit(result)
 
     @staticmethod
     def task(host: IPv4Address, result: List[HostScanResult]):
