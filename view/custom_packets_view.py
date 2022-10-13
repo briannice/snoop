@@ -12,7 +12,7 @@ class CustomPacketsView(CustomPacketsUI):
         self.fill_interfaces(getInterfaces())
 
         # Event handler for pushbutton
-        self.pushButton_send_packets.clicked.connect(self.send_packets)
+        self.pushButton_send_packets.clicked.connect(self.send_packets_handler)
 
         # Event handler for radiobutton
         self.radioButton_udp.clicked.connect(self.check_protocol)
@@ -27,20 +27,52 @@ class CustomPacketsView(CustomPacketsUI):
         self.comboBox.clear()
         self.comboBox.addItems(interfaces)
 
-    def send_packets(self):
-        self.send_icmp()
+    def send_packets_handler(self):
+        self.send_packets()
 
     # Send ICMP packets
-    def send_icmp(self):
-        try:
-            source = self.input_source_address.text()
-            dest = self.input_destination_address.text()
-            inter = self.comboBox.currentText()
-            message = self.input_icmp_message.toPlainText()
+    def send_packets(self):
 
-            SendICMP(source=source, destination=dest, interface=inter, message=message)
-        except():
-            print("Error")
+        # Inputs that always need to be valid
+        source = self.input_source_address.text()
+        dest = self.input_destination_address.text()
+        inter = self.comboBox.currentText()
+        cnt = int(self.input_count.text())
+
+        # ICMP
+        if self.radioButton_icmp.isChecked():
+            try:
+                # Inputs
+                message = self.input_icmp_message.toPlainText()
+
+                # Command
+                SendICMP(source=source, destination=dest, interface=inter, message=message, count=cnt)
+            except ValueError:
+                print("ICMP Value error")
+
+        # TCP
+        if self.radioButton_tcp.isChecked():
+            try:
+                # Inputs
+                sport = int(self.input_port_source.text())
+                dstport = int(self.input_port_destination.text())
+
+                # Command
+                SendTCP(source=source, destination=dest, interface=inter, count=cnt, dstport=dstport, srcport=sport)
+            except ValueError:
+                print("TCP Value error")
+
+        # TCP
+        if self.radioButton_udp.isChecked():
+            try:
+                # Inputs
+                sport = int(self.input_port_source.text())
+                dstport = int(self.input_port_destination.text())
+
+                # Command
+                SendUDP(source=source, destination=dest, interface=inter, count=cnt, dstport=dstport, srcport=sport)
+            except ValueError:
+                print("UDP Value error")
 
     # Set standards for some protocols
     # Ex. ICMP does not use ports etc.

@@ -77,6 +77,7 @@ class CustomPacketsUI(TabWidget):
         self.label_count = LabelWidget(self)
         self.label_count.setGeometry(QRect(40, 560, 161, 21))
         self.input_count = TextInputWidget(self)
+        self.input_count.setText("1")
         self.input_count.setGeometry(QRect(210, 560, 71, 22))
 
         self.pushButton_send_packets = ButtonWidget(self)
