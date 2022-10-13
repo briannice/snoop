@@ -93,5 +93,17 @@ class NetworkScanningUi(TabWidget):
         # Setup
         self.setLayout(self.Layout)
 
+    def get_packet_checkboxes(self):
+        return [
+            self.SelectPacketsPingCheckbox,
+            self.SelectPacketsSshCheckbox,
+            self.SelectPacketsHttpCheckbox,
+            self.SelectPacketsHttpsCheckbox
+        ]
+
     def get_filter_checkboxes(self):
-        return [self.FilterUpCheckbox, self.FilterUnknownCheckbox, self.FilterBlockedCheckbox]
+        return [
+            self.FilterUpCheckbox,
+            self.FilterUnknownCheckbox,
+            self.FilterBlockedCheckbox
+        ]
