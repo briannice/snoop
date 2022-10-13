@@ -37,7 +37,7 @@ class CustomPacketsUI(TabWidget):
         self.radioButton_udp.setGeometry(QRect(190, 210, 51, 20))
         self.radioButton_udp.setObjectName("radioButton_udp")
 
-        # Adresses and ports
+        # Addresses and ports
         self.label_source_address = LabelWidget(self)
         self.label_source_address.setGeometry(QRect(40, 270, 121, 21))
         self.label_choose_destination_address = LabelWidget(self)
@@ -98,3 +98,9 @@ class CustomPacketsUI(TabWidget):
             "Important note: ICMP has no concept of ports, as TCP and UDP do, but instead uses types and codes.")
         self.label_count.setText("How much packets to send:")
         self.pushButton_send_packets.setText("Send packets!")
+
+        # Default values
+        self.input_source_address.setText("127.0.0.1")
+        self.input_destination_address.setText("127.0.0.1")
+        self.input_icmp_message.setPlainText("Hello world!")
+        self.radioButton_icmp.setChecked(True)
