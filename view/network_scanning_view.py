@@ -14,15 +14,28 @@ class NetworkScanningView(NetworkScanningUi):
         # Setup
         self.thread_pool = QThreadPool()
 
+        self.SelectPacketsPingCheckbox.setChecked(True)
+        self.SelectPacketsSshCheckbox.setChecked(True)
+        self.SelectPacketsHttpCheckbox.setChecked(True)
+        self.SelectPacketsHttpsCheckbox.setChecked(True)
+        self.FilterUpCheckbox.setChecked(True)
+        self.FilterUnknownCheckbox.setChecked(True)
+        self.FilterBlockedCheckbox.setChecked(True)
+
         # Data
         self.host_scan_results: List[HostScanResult] = []
 
         # Handlers
         self.ButtonScan.clicked.connect(self.handler_button_scan)
         self.ButtonClear.clicked.connect(self.handler_button_clear)
+
         self.FilterUpCheckbox.clicked.connect(self.update_output_text)
         self.FilterUnknownCheckbox.clicked.connect(self.update_output_text)
         self.FilterBlockedCheckbox.clicked.connect(self.update_output_text)
+
+        self.FilterUpCheckbox.clicked.connect(self.handler_filter_change)
+        self.FilterUnknownCheckbox.clicked.connect(self.handler_filter_change)
+        self.FilterBlockedCheckbox.clicked.connect(self.handler_filter_change)
 
     def handler_button_scan(self):
         worker = NetworkScanningWorker()
@@ -46,3 +59,13 @@ class NetworkScanningView(NetworkScanningUi):
                 self.OutputText.append(str(hsr))
             if hsr.is_blocked() and self.FilterBlockedCheckbox.isChecked():
                 self.OutputText.append(str(hsr))
+
+    def handler_filter_change(self):
+        count = 0
+        for cb in self.get_filter_checkboxes():
+            if cb.isChecked():
+                count += 1
+        if count == 0:
+            self.FilterError.setText("At least one filter should be checked to view some output...")
+        else:
+            self.FilterError.setText("")
