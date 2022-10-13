@@ -1,6 +1,6 @@
 from ui import CustomPacketsUI
 from lib.sniffing import getInterfaces
-from lib.custom_packets import SendUDP, SendTCP, SendICMP
+from workers import CreatePacketsWorker
 
 
 class CustomPacketsView(CustomPacketsUI):
@@ -33,6 +33,9 @@ class CustomPacketsView(CustomPacketsUI):
     # Send ICMP packets
     def send_packets(self):
 
+        # Worker(s)
+        create_packets_worker = CreatePacketsWorker()
+
         # Inputs that always need to be valid
         source = self.input_source_address.text()
         dest = self.input_destination_address.text()
@@ -46,7 +49,8 @@ class CustomPacketsView(CustomPacketsUI):
                 message = self.input_icmp_message.toPlainText()
 
                 # Command
-                SendICMP(source=source, destination=dest, interface=inter, message=message, count=cnt)
+                create_packets_worker.SendICMP_worker(source, dest, inter, message, cnt)
+
             except ValueError:
                 print("ICMP Value error")
 
@@ -58,7 +62,7 @@ class CustomPacketsView(CustomPacketsUI):
                 dstport = int(self.input_port_destination.text())
 
                 # Command
-                SendTCP(source=source, destination=dest, interface=inter, count=cnt, dstport=dstport, srcport=sport)
+                create_packets_worker.SendTCP_worker(source, dest, dstport, sport, inter, cnt)
             except ValueError:
                 print("TCP Value error")
 
@@ -70,7 +74,7 @@ class CustomPacketsView(CustomPacketsUI):
                 dstport = int(self.input_port_destination.text())
 
                 # Command
-                SendUDP(source=source, destination=dest, interface=inter, count=cnt, dstport=dstport, srcport=sport)
+                create_packets_worker.SendUDP_worker(source, dest, dstport, sport, inter, cnt)
             except ValueError:
                 print("UDP Value error")
 
