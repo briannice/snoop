@@ -1,5 +1,6 @@
 import sys
 
+from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from view import RootView
@@ -12,7 +13,8 @@ class MainWindow(QMainWindow):
 
         root_view = RootView()
 
-        self.setWindowTitle("Snoop")
+        self.setWindowTitle("Snoop - Network analyzer and hacking tool ©KDG")
+        self.setWindowIcon(QtGui.QIcon('./ui/static/snoop_logo_256x256.png'))
         self.setMinimumSize(1000, 800)
         self.setContentsMargins(5, 5, 5, 5)
         self.setCentralWidget(root_view)
