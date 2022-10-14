@@ -15,8 +15,7 @@ class NslookpView(NslookupUi):
         self.Result.clear()
 
         for checkbox in range(len(self.Checkboxes)):
-            # todo: voordien stond er Qt.Checked wat value 2 teruggaf, maar widgets hoe oplossen?
-            if self.Checkboxes[checkbox].checkState() == 2:
+            if self.Checkboxes[checkbox].isChecked():
                 rdataCheckbox = dns.rdatatype.from_text(self.Checkboxes[checkbox].text())
                 self.handle_result_search_domain(lookupRecord(domain, rdataCheckbox), rdataCheckbox)
 
