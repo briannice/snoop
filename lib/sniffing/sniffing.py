@@ -6,6 +6,10 @@ import psutil
 # Get every interface from host
 def getInterfaces():
     adr = psutil.net_if_addrs()
+    # Sniffing Pseudo Loopback interfaces in Windows can cause crashes
+    loopback = 'Loopback Pseudo-Interface 1'
+    if loopback in adr.keys():
+        adr.pop(loopback)
     return list(adr.keys())
 
 
