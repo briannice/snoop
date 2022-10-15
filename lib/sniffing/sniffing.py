@@ -21,6 +21,10 @@ def sniff_only_udp_packets(interface, prn):
     sniff(iface=interface, prn=prn, store=0, filter="udp")
 
 
+def sniff_only_icmp_packets(interface, prn):
+    sniff(iface=interface, prn=prn, store=0, filter="icmp")
+
+
 def check_icmp(pkt):
     return ICMP in pkt
 

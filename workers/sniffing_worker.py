@@ -28,6 +28,10 @@ class SniffingWorker(QRunnable):
             case 2:
                 print("UDP (worker)")
                 sniff_only_udp_packets(self.interface, self.handlePacket)
+            # ICMP
+            case 3:
+                print("ICMP (worker)")
+                sniff_only_icmp_packets(self.interface, self.handlePacket)
 
     # WHAT to display
     # Emits signal summary of packet

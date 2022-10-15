@@ -34,11 +34,17 @@ class SniffingUI(TabWidget):
         self.radioButton_TCP = RadioButtonWidget(self)
         self.radioButton_TCP.setGeometry(QRect(50, 170, 51, 20))
         self.radioButton_TCP.setText("TCP")
+
         self.radioButton_UDP = RadioButtonWidget(self)
         self.radioButton_UDP.setGeometry(QRect(110, 170, 51, 20))
         self.radioButton_UDP.setText("UDP")
+
+        self.radioButton_ICMP = RadioButtonWidget(self)
+        self.radioButton_ICMP.setGeometry(QRect(170, 170, 58, 20))
+        self.radioButton_ICMP.setText("ICMP")
+
         self.radioButton_both = RadioButtonWidget(self)
-        self.radioButton_both.setGeometry(QRect(170, 170, 51, 20))
+        self.radioButton_both.setGeometry(QRect(235, 170, 51, 20))
         self.radioButton_both.setText("Both")
         self.radioButton_both.setChecked(True)
 
