@@ -45,7 +45,7 @@ class SniffingUI(TabWidget):
 
         self.radioButton_both = RadioButtonWidget(self)
         self.radioButton_both.setGeometry(QRect(235, 170, 51, 20))
-        self.radioButton_both.setText("Both")
+        self.radioButton_both.setText("All")
         self.radioButton_both.setChecked(True)
 
         self.listWidget = ListWidget(self)
