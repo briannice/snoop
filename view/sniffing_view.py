@@ -12,6 +12,9 @@ class SniffingView(SniffingUI):
         # Worker(s)
         self.sniffing_worker = SniffingWorker(self.comboBox_interfaces.currentText(), protocol=0)
 
+        # Thread pool
+        self.thread_pool = QThreadPool()
+
         # Handlers
         self.pushButton_start_sniffing.clicked.connect(self.worker_start)
         self.pushButton_stop_sniffing.clicked.connect(self.worker_stop)
@@ -19,6 +22,7 @@ class SniffingView(SniffingUI):
         self.radioButton_both.clicked.connect(self.change_worker_to_protocol)
         self.radioButton_TCP.clicked.connect(self.change_worker_to_protocol)
         self.radioButton_UDP.clicked.connect(self.change_worker_to_protocol)
+        self.radioButton_ICMP.clicked.connect(self.change_worker_to_protocol)
         self.fill_interfaces(getInterfaces())
 
     # Fill interfaces in UI combobox
@@ -39,11 +43,20 @@ class SniffingView(SniffingUI):
             self.itemBuffer.clear()
         self.label_count.setText("Total packets: " + str(self.count_packets))
 
+    def handle_packet_icmp(self, packet):
+        self.listWidget.addItem(packet)
+        self.listWidget.scrollToBottom()
+        self.label_count.setText("Total packets: " + str(self.count_packets))
+
     # Creating worker to do packet handling
     # Wrapper function for start button
     def worker_start(self):
-        # Call function "handlePacket" when clicking on start button
-        self.sniffing_worker.signals.result.connect(self.handle_packet)
+        # Checks for ICMP
+        if self.radioButton_ICMP.isChecked():
+            self.sniffing_worker.signals.result.connect(self.handle_packet_icmp)
+        else:
+            self.sniffing_worker.signals.result.connect(self.handle_packet)
+
         # Add worker to threadpool
         QThreadPool.globalInstance().start(self.sniffing_worker)
         # User experience
@@ -75,5 +88,7 @@ class SniffingView(SniffingUI):
             protocol = 1
         if self.radioButton_UDP.isChecked():
             protocol = 2
+        if self.radioButton_ICMP.isChecked():
+            protocol = 3
         self.worker_stop()
         self.sniffing_worker = SniffingWorker(self.comboBox_interfaces.currentText(), protocol=protocol)

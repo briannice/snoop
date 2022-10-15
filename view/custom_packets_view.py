@@ -48,7 +48,11 @@ class CustomPacketsView(CustomPacketsUI):
                 # Inputs
                 message = self.input_icmp_message.toPlainText()
                 # Command
-                create_packets_worker.SendICMP_worker(source, dest, inter, message, cnt)
+                if cnt is None:
+                    cnt = 1
+                if message is None:
+                    message = "Hello world"
+                create_packets_worker.SendICMP_worker(source, dest, inter, cnt, message)
 
             except ValueError:
                 print("ICMP Value error")

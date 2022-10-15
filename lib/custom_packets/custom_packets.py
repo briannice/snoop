@@ -2,7 +2,7 @@ from scapy.layers.inet import IP, ICMP, TCP, UDP
 from scapy.sendrecv import send
 
 
-def SendICMP(source, destination, interface, count=1, message="Hello World"):
+def SendICMP(source, destination, interface, message, count):
     send(IP(src=source, dst=destination, ttl=128) / ICMP() / message, iface=interface, count=count)
 
 
