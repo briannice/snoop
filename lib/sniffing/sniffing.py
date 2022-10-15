@@ -22,10 +22,7 @@ def sniff_only_udp_packets(interface, prn):
 
 
 def check_icmp(pkt):
-    if pkt.haslayer(ICMP):
-        return True
-    else:
-        return False
+    return ICMP in pkt
 
 
 def get_icmp_message(pkt):
