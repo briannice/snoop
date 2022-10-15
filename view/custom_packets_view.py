@@ -47,7 +47,6 @@ class CustomPacketsView(CustomPacketsUI):
             try:
                 # Inputs
                 message = self.input_icmp_message.toPlainText()
-
                 # Command
                 create_packets_worker.SendICMP_worker(source, dest, inter, message, cnt)
 
@@ -60,7 +59,6 @@ class CustomPacketsView(CustomPacketsUI):
                 # Inputs
                 sport = int(self.input_port_source.text())
                 dstport = int(self.input_port_destination.text())
-
                 # Command
                 create_packets_worker.SendTCP_worker(source, dest, dstport, sport, inter, cnt)
             except ValueError:
@@ -72,7 +70,6 @@ class CustomPacketsView(CustomPacketsUI):
                 # Inputs
                 sport = int(self.input_port_source.text())
                 dstport = int(self.input_port_destination.text())
-
                 # Command
                 create_packets_worker.SendUDP_worker(source, dest, dstport, sport, inter, cnt)
             except ValueError:

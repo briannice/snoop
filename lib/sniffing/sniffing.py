@@ -1,5 +1,6 @@
-import psutil
+from scapy.layers.inet import TCP, UDP, ICMP
 from scapy.all import *
+import psutil
 
 
 # Get every interface from host
@@ -18,3 +19,12 @@ def sniff_only_tcp_packets(interface, prn):
 
 def sniff_only_udp_packets(interface, prn):
     sniff(iface=interface, prn=prn, store=0, filter="udp")
+
+
+def check_icmp(pkt):
+    return ICMP in pkt
+
+
+def get_icmp_message(pkt):
+    # readable_payload = bytes(pkt[TCP].payload).decode('UTF8', 'replace')
+    return pkt[Raw].load

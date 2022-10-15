@@ -11,13 +11,15 @@ class CreatePacketsWorker(QRunnable):
         self.signals = CreatePacketSignal()
 
     @pyqtSlot()
-    def SendICMP_worker(self, source, destination, interface, ttl=128, count=1, message="Hello World"):
+    def SendICMP_worker(self, source, destination, interface, count=1, message="Hello World"):
         SendICMP(source=source, destination=destination, interface=interface, message=message, count=count)
 
     @pyqtSlot()
     def SendTCP_worker(self, source, destination, dstport, srcport, interface, count=1):
-        SendTCP(source=source, destination=destination, interface=interface, count=count, dstport=dstport, srcport=srcport)
+        SendTCP(source=source, destination=destination, interface=interface, count=count, dstport=dstport,
+                srcport=srcport)
 
     @pyqtSlot()
     def SendUDP_worker(self, source, destination, dstport, srcport, interface, count=1):
-        SendUDP(source=source, destination=destination, interface=interface, count=count, dstport=dstport, srcport=srcport)
+        SendUDP(source=source, destination=destination, interface=interface, count=count, dstport=dstport,
+                srcport=srcport)
