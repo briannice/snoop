@@ -34,7 +34,11 @@ class SniffingWorker(QRunnable):
     @pyqtSlot()
     def handlePacket(self, packet):
         if self.running:
-            self.signals.result.emit(packet.summary())
+            if check_icmp(packet):
+                icmp_message = get_icmp_message(packet)
+                self.signals.result.emit("{} : {}".format(packet.summary(), icmp_message))
+            else:
+                self.signals.result.emit(packet.summary())
         else:
             # Reset variable
             self.running = True
