@@ -9,15 +9,7 @@ def ping_scan(ip: IPv4Address) -> HostScanResult:
     packet = IP(dst=str(ip)) / ICMP(type=8)
     res = sr1(packet, timeout=2, verbose=0)
 
-    if res is None:
-        return HostScanResult(
-            dst_ip=ip,
-            host_state=HostState.UNKNOWN,
-            icmp_packet=None,
-            tcp_packet=None
-        )
-
-    if res.haslayer(ICMP):
+    if res is not None and res.haslayer(ICMP):
         ip_src_ip = res.getlayer(IP).src
         ip_dst_ip = res.getlayer(IP).dst
         icmp_type = res.getlayer(ICMP).type
