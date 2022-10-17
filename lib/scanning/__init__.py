@@ -1,2 +1,3 @@
 from .ping_scan import ping_scan
-from .utils import HostScanResult, HostState, ICMPPacket, PortState, TCPPacket
+from .stealth_scan import stealth_scan
+from .utils import HostScanResult, HostState, ICMPPacket, PortScanResult, PortState, TCPPacket

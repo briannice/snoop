@@ -18,12 +18,10 @@ class NetworkScanningWorker(QRunnable):
     @pyqtSlot()
     def run(self):
         with ThreadPoolExecutor(100) as executor:
-            network = IPv4Network("192.168.56.0/24")
+            network = IPv4Network("192.168.1.0/24")
             result = []
-            print("Network scanning")
             futures = [executor.submit(self.task, host, result) for host in network.hosts()]
             wait(futures)
-            print("Scanning done!")
             self.signals.data.emit(result)
 
     @staticmethod
