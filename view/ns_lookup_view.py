@@ -27,19 +27,21 @@ class NslookpView(NslookupUi):
                     self.Result.append(dns.rdatatype.to_text(typeData) + ": " + str(re.exchange))
 
                     # Search on IP adresses related to MX
-                    self._sub_search(lookupRecord(str(re.exchange), dns.rdatatype.A))
-                    self._sub_search(lookupRecord(str(re.exchange), dns.rdatatype.AAAA))
+                    self._sub_search(str(re.exchange))
                 else:
                     self.Result.append(dns.rdatatype.to_text(typeData) + ": " + str(re))
 
                     # Same as with MX, but on top of it for NS
                     if typeData == dns.rdatatype.NS:
-                        self._sub_search(lookupRecord(str(re), dns.rdatatype.A))
-                        self._sub_search(lookupRecord(str(re), dns.rdatatype.AAAA))
+                        self._sub_search(str(re))
         else:
             self.Result.append(dns.rdatatype.to_text(typeData) + ": " + "No records found")
 
-    def _sub_search(self, result: dns.rrset):
-        if result is not None:
-            for re in result:
-                self.Result.append("\t" + dns.rdatatype.to_text(re.rdtype) + ": " + str(re))
+    def _sub_search(self, domain: str):
+        dnsTypes = [dns.rdatatype.A, dns.rdatatype.AAAA]
+
+        for dnsType in range(len(dnsTypes)):
+            q = lookupRecord(domain, dnsTypes[dnsType])
+            if q is not None:
+                for result in q:
+                    self.Result.append("\t" + dns.rdatatype.to_text(result.rdtype) + ": " + str(result))
