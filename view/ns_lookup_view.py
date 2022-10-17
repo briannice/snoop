@@ -71,7 +71,8 @@ class NslookpView(NslookupUi):
 
     def _format_soa_record(self, soa: dns.rdatatype.SOA):
         self.Result.append("  primary name server: " + str(soa.mname))
-        self.Result.append("  responsible name server: " + str(soa.rname))
+        self._sub_search(str(soa.mname))
+        self.Result.append("  responsible mail address: " + str(soa.rname))
         self.Result.append("  serial: " + str(soa.serial))  # moet zo blijven want is geen tijd
         self.Result.append("  refresh: " + _seconds_to_readable_format(soa.refresh))
         self.Result.append("  retry: " + _seconds_to_readable_format(soa.retry))
