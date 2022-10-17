@@ -18,6 +18,13 @@ class NslookupUi(TabWidget):
         self.Header.addWidget(self.DomainButton)
 
         # Options
+        self.CheckAllButton = ButtonWidget("Check all")
+        self.UncheckAllButton = ButtonWidget("Uncheck all")
+
+        self.CheckButtons = HLayoutWidget()
+        self.CheckButtons.addWidget(self.CheckAllButton)
+        self.CheckButtons.addWidget(self.UncheckAllButton)
+
         self.Checkboxes = [CheckboxInputWidget("NS"), CheckboxInputWidget("A"), CheckboxInputWidget("AAAA"),
                            CheckboxInputWidget("MX")]
 
@@ -35,6 +42,7 @@ class NslookupUi(TabWidget):
         self.Layout = VLayoutWidget()
         self.Layout.addLayout(self.Header)
         self.Layout.addWidget(HLineWidget())
+        self.Layout.addLayout(self.CheckButtons)
         self.Layout.addLayout(self.CheckBoxInput)
         self.Layout.addWidget(HLineWidget())
         self.Layout.addLayout(self.Resultoutput)

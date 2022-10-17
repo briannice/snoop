@@ -8,7 +8,17 @@ class NslookpView(NslookupUi):
         super().__init__(*args, **kwargs)
 
         # Handlers
+        self.CheckAllButton.clicked.connect(self.handle_check_all_checkboxes)
+        self.UncheckAllButton.clicked.connect(self.handle_uncheck_all_checkboxes)
         self.DomainButton.clicked.connect(self.handle_search_domain)
+
+    def handle_check_all_checkboxes(self):
+        for checkbox in range(len(self.Checkboxes)):
+            self.Checkboxes[checkbox].setChecked(True)
+
+    def handle_uncheck_all_checkboxes(self):
+        for checkbox in range(len(self.Checkboxes)):
+            self.Checkboxes[checkbox].setChecked(False)
 
     def handle_search_domain(self):
         domain = self.DomainEdit.text()
