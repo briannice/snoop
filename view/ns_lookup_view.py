@@ -1,6 +1,16 @@
-from ui import NslookupUi
-import dns.rrset, dns.rdatatype
+from datetime import timedelta
+
+import dns.rdatatype
+import dns.rrset
+
 from lib.domainresearch import lookupRecord
+from ui import NslookupUi
+
+
+def _seconds_to_readable_format(sec: int):
+    td_str = str(timedelta(seconds=sec))
+    x = td_str.split(':')
+    return x[0] + ' Hours ' + x[1] + ' Minutes ' + x[2] + ' Seconds'
 
 
 class NslookpView(NslookupUi):
@@ -38,6 +48,9 @@ class NslookpView(NslookupUi):
 
                     # Search on IP adresses related to MX
                     self._sub_search(str(re.exchange))
+                elif typeData == dns.rdatatype.SOA:
+                    self.Result.append(dns.rdatatype.to_text(typeData) + ": ")
+                    self._format_soa_record(re)
                 else:
                     self.Result.append(dns.rdatatype.to_text(typeData) + ": " + str(re))
 
@@ -55,3 +68,12 @@ class NslookpView(NslookupUi):
             if q is not None:
                 for result in q:
                     self.Result.append("\t" + dns.rdatatype.to_text(result.rdtype) + ": " + str(result))
+
+    def _format_soa_record(self, soa: dns.rdatatype.SOA):
+        self.Result.append("  primary name server: " + str(soa.mname))
+        self.Result.append("  responsible name server: " + str(soa.rname))
+        self.Result.append("  serial: " + str(soa.serial))  # moet zo blijven want is geen tijd
+        self.Result.append("  refresh: " + _seconds_to_readable_format(soa.refresh))
+        self.Result.append("  retry: " + _seconds_to_readable_format(soa.retry))
+        self.Result.append("  expire: " + _seconds_to_readable_format(soa.expire))
+        self.Result.append("  default TTL: " + _seconds_to_readable_format(soa.minimum))

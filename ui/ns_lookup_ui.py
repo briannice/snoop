@@ -26,7 +26,7 @@ class NslookupUi(TabWidget):
         self.CheckButtons.addWidget(self.UncheckAllButton)
 
         self.Checkboxes = [CheckboxInputWidget("NS"), CheckboxInputWidget("A"), CheckboxInputWidget("AAAA"),
-                           CheckboxInputWidget("MX")]
+                           CheckboxInputWidget("MX"), CheckboxInputWidget("SOA")]
 
         self.CheckBoxInput = HLayoutWidget()
         for x in range(len(self.Checkboxes)):
