@@ -8,15 +8,22 @@ class PortScanningUi(TabWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Select host
-        self.SelectHostTitle = LabelWidget("Host", type="label")
+        # Select host and ports
+        self.SelectHostLabel = LabelWidget("Host", type="label")
         self.SelectHostTextInput = TextInputWidget()
         self.SelectHostError = LabelWidget("", type="error")
 
+        self.SelectPortLabel = LabelWidget("Port", type="label")
+        self.SelectPortTextInput = TextInputWidget()
+        self.SelectPortError = LabelWidget("", type="error")
+
         self.SelectHostLayout = GLayoutWidget(h_spacing="sm", v_spacing="sm")
-        self.SelectHostLayout.addWidget(self.SelectHostTitle, 0, 0, 1, 1)
+        self.SelectHostLayout.addWidget(self.SelectHostLabel, 0, 0, 1, 1)
         self.SelectHostLayout.addWidget(self.SelectHostTextInput, 0, 1, 1, 1)
         self.SelectHostLayout.addWidget(self.SelectHostError, 1, 0, 1, 2)
+        self.SelectHostLayout.addWidget(self.SelectPortLabel, 2, 0, 1, 1)
+        self.SelectHostLayout.addWidget(self.SelectPortTextInput, 2, 1, 1, 1)
+        self.SelectHostLayout.addWidget(self.SelectPortError, 3, 0, 1, 2)
 
         # Select Packets
         self.SelectPacketsTitle = LabelWidget("Packets", type="section")
