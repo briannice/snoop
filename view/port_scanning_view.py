@@ -1,9 +1,9 @@
 from ipaddress import IPv4Address
-import re
 
 from PyQt5.QtCore import QThreadPool
 
 from ui import PortScanningUi
+from workers import PortScanningWorker
 
 
 class PortScanningView(PortScanningUi):
@@ -25,7 +25,22 @@ class PortScanningView(PortScanningUi):
     # ------------- #
 
     def handler_scan_button(self):
+
+        # Validation
         self.validate()
+
+        # Get data
+        ip = self.SelectHostTextInput.text()
+        ports = self.get_selected_ports()
+        packets = [cb.isChecked() for cb in self.get_packet_checkboxes()]
+
+        # Start worker
+        worker = PortScanningWorker()
+        self.thread_pool.start(worker)
+
+    def handler_port_scan_results(self, data):
+        for d in data:
+            print(data)
 
     # ---------------- #
     #    VALIDATION    #
@@ -111,3 +126,19 @@ class PortScanningView(PortScanningUi):
         self.SelectPacketsError.setText("At least one packet should be checked")
         self.SelectPacketsLayout.addWidget(self.SelectPacketsError, 2, 0, 1, 4)
         return False
+
+    # ------------ #
+    #    HELPERS   #
+    # ------------ #
+
+    def get_selected_ports(self):
+        result = []
+        text = self.SelectPortTextInput.text()
+        for t in text.split(","):
+            if "-" in t:
+                min = int(t.split("-")[0])
+                max = int(t.split("-")[1])
+                result.extend(range(min, max + 1))
+            else:
+                result.append(str(t))
+        return result
