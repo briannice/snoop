@@ -1,4 +1,5 @@
 from typing import List
+
 from PyQt5.QtCore import QThreadPool
 
 from lib.scanning import HostScanResult

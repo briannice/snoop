@@ -14,26 +14,26 @@ class PortScanningUi(TabWidget):
         # Select host and ports
         self.SelectHostLabel = LabelWidget("Host", type="label")
         self.SelectHostTextInput = TextInputWidget()
-        self.SelectHostError = LabelWidget("This is an error!", type="error")
+        self.SelectHostError = LabelWidget("", type="error")
         self.SelectHostInfo = LabelWidget("Example: 192.168.56.1", type="info")
 
-        self.SelectPortLabel = LabelWidget("Port", type="label")
+        self.SelectPortLabel = LabelWidget("Ports", type="label")
         self.SelectPortTextInput = TextInputWidget()
-        self.SelectPortError = LabelWidget("This is an error!", type="error")
+        self.SelectPortError = LabelWidget("", type="error")
         self.SelectPortInfo = LabelWidget("Using individual ports: 22,23,80\nUsing ranges: 22-24,80", type="info")
 
         self.SelectHostLayout = GLayoutWidget(h_spacing="sm", v_spacing="sm")
+
         self.SelectHostLayout.addWidget(self.SelectHostLabel, 0, 0, 1, 1)
         self.SelectHostLayout.addWidget(self.SelectHostTextInput, 0, 1, 1, 1)
         self.SelectHostLayout.addWidget(self.SelectHostInfo, 0, 2, 1, 1)
-        self.SelectHostLayout.addWidget(self.SelectHostError, 1, 0, 1, 2)
+
         self.SelectHostLayout.addWidget(self.SelectPortLabel, 2, 0, 1, 1)
         self.SelectHostLayout.addWidget(self.SelectPortTextInput, 2, 1, 1, 1)
-        self.SelectHostLayout.addWidget(self.SelectPortError, 3, 0, 1, 2)
         self.SelectHostLayout.addWidget(self.SelectPortInfo, 2, 2, 1, 1)
 
         # Select Packets
-        self.SelectPacketsError = LabelWidget("This is an error!", type="error")
+        self.SelectPacketsError = LabelWidget("", type="error")
 
         self.SelectPacketsStealthLabel = LabelWidget("Stealth")
         self.SelectPacketsConnectLabel = LabelWidget("Connect")
@@ -58,7 +58,6 @@ class PortScanningUi(TabWidget):
         self.SelectPacketsLayout.addWidget(self.SelectPacketsXmasCheckbox, 1, 2)
         self.SelectPacketsLayout.addWidget(self.SelectPacketsFinCheckbox, 1, 3)
         self.SelectPacketsLayout.addWidget(self.SelectPacketsAckCheckbox, 1, 4)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsError, 2, 0, 1, 4)
 
         self.SelectPacketsGroup = GroupWidget("Packets")
         self.SelectPacketsGroup.setLayout(self.SelectPacketsLayout)
