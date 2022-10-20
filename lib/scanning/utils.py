@@ -8,6 +8,9 @@ class HostState(Enum):
     BLOCKED = "BLOCKED"
     UNKNOWN = "UNKNOWN"
 
+    def __str__(self) -> str:
+        return self.value
+
 
 class PortState(Enum):
     OPEN = "OPEN"
@@ -18,6 +21,9 @@ class PortState(Enum):
     CLOSED_FILTERED = "CLOSED | FILTERED"
     INTERNAL_ERROR = "INTERNAL ERROR"
 
+    def __str__(self) -> str:
+        return self.value
+
 
 class PortScanMethod(Enum):
     CONNECT = "CONNECT"
@@ -25,6 +31,9 @@ class PortScanMethod(Enum):
     XMAS = "XMAS"
     FIN = "FIN"
     ACK = "ACK"
+
+    def __str__(self) -> str:
+        return self.value
 
     @staticmethod
     def dict_to_list(dct):
@@ -180,26 +189,41 @@ class PortScanResult():
         self.tcp = tcp
 
     def __str__(self) -> str:
-        return f"[{self.method}] {self.ip}:{self.port} -> {self.state}"
+        return f"{self.method}   →   {self.state}"
 
 
 class PortScanConclusion():
 
-    def __init__(self, port: int, result: List[PortScanResult]):
+    def __init__(self, port: int, results: List[PortScanResult]):
         self.port = port
-        self.result = result
+        self.results = results
+        self.state = self.get_global_state()
 
-    def __eq__(self, o: PortScanResult) -> bool:
-        self.port == o.port
+    def __str__(self) -> str:
+        result = ""
 
-    def __lt__(self, o: PortScanResult) -> bool:
-        self.port < o.port
+        result += f"{self.port}   →   {self.state}\n"
 
-    def __le__(self, o: PortScanResult) -> bool:
-        self.port <= o.port
+        l = len(result)
+        result += "-" * l + "\n"
 
-    def __gt__(self, o: PortScanResult) -> bool:
-        self.port > o.port
+        for i in range(len(self.results)):
+            r = self.results[i]
+            result += f"★ {r}"
+            if i != len(self.results) - 1:
+                result += "\n"
+        return result
 
-    def __ge__(self, o: PortScanResult) -> bool:
-        self.port >= o.port
+    def get_global_state(self):
+        for r in self.results:
+            if r.state == PortState.OPEN:
+                return PortState.OPEN
+        for r in self.results:
+            if r.state == PortState.CLOSED:
+                return PortState.CLOSED
+        return PortState.FILTERED
+
+    def is_important(self):
+        if self.state == PortState.FILTERED:
+            return False
+        return True
