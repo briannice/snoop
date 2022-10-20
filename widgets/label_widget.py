@@ -14,15 +14,20 @@ class LabelWidget(QLabel):
         match type:
             case "label":
                 self.font.setPointSize(9)
-                self.setStyleSheet("color: black;")
+                self.setStyleSheet("color: Black; font-weight: 500;")
             case "error":
-                self.setStyleSheet("color: red;")
+                self.setStyleSheet("color: Red;")
             case "section":
                 self.font.setPointSize(12)
-                self.setStyleSheet("font-weight: bold; color: #2F2F2F;")
+                self.setStyleSheet("font-weight: bold; color: Black;")
             case "title":
-                self.font.setPointSize(15)
+                self.font.setPointSize(18)
                 self.setStyleSheet("")
+            case "info":
+                self.font.setPointSize(9)
+                self.setStyleSheet("color: DimGrey;")
+                self.setWordWrap(True)
+                self.setFixedWidth(300)
             case _:
                 raise SnoopException("Invalid label type!")
 

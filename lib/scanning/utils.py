@@ -16,11 +16,33 @@ class PortState(Enum):
     UNFILTERED = "UNFILTERED"
     OPEN_FILTERED = "OPEN | FILTERED"
     CLOSED_FILTERED = "CLOSED | FILTERED"
+    INTERNAL_ERROR = "INTERNAL ERROR"
 
 
 class PortScanMethod(Enum):
     CONNECT = "CONNECT"
     STEALTH = "STEALTH"
+    XMAS = "XMAS"
+    FIN = "FIN"
+    ACK = "ACK"
+
+    @staticmethod
+    def dict_to_list(dct):
+        result = []
+        for k, v in dct.items():
+            if v:
+                match k:
+                    case "ack":
+                        result.append(PortScanMethod.ACK)
+                    case "connect":
+                        result.append(PortScanMethod.CONNECT)
+                    case "stealth":
+                        result.append(PortScanMethod.STEALTH)
+                    case "fin":
+                        result.append(PortScanMethod.FIN)
+                    case "xmas":
+                        result.append(PortScanMethod.XMAS)
+        return result
 
 
 class TCPFlags():
@@ -101,58 +123,83 @@ class TCPPacket():
         self.dst_port = dst_port
         self.flags = flags
 
+    def __str__(self) -> str:
+        return f"{self.src_ip}:{self.src_port} -> {self.dst_ip}:{self.dst_port} [ flags={self.flags} ]"
+
 
 class HostScanResult():
 
     def __init__(
         self,
-        dst_ip: IPv4Address,
-        host_state: HostState,
-        icmp_packet: ICMPPacket,
-        tcp_packet: TCPPacket
+        ip: IPv4Address,
+        state: HostState,
+        icmp: ICMPPacket | None,
+        tcp: TCPPacket | None
     ):
-        self.host_state = host_state
-        self.dst_ip = dst_ip
-        self.icmp_packet = icmp_packet
-        self.tcp_packet = tcp_packet
+        self.ip = ip
+        self.state = state
+        self.icmp = icmp
+        self.tcp = tcp
 
     def __str__(self) -> str:
-        return f"{self.dst_ip}: {self.host_state}"
+        return f"{self.ip}: {self.state}"
 
     def get_packet(self) -> ICMPPacket | TCPPacket | None:
-        if self.icmp_packet:
-            return self.icmp_packet
-        if self.tcp_packet:
-            return self.tcp_packet
+        if self.icmp:
+            return self.icmp
+        if self.tcp:
+            return self.tcp
         return None
 
     def is_up(self) -> bool:
-        return self.host_state == HostState.UP
+        return self.state == HostState.UP
 
     def is_unknown(self) -> bool:
-        return self.host_state == HostState.UNKNOWN
+        return self.state == HostState.UNKNOWN
 
     def is_blocked(self) -> bool:
-        return self.host_state == HostState.BLOCKED
+        return self.state == HostState.BLOCKED
 
 
 class PortScanResult():
 
     def __init__(
         self,
-        dst_ip: IPv4Address,
-        dst_port: int,
-        port_state: PortState,
-        scan_method: PortScanMethod,
-        icmp_packet: ICMPPacket,
-        tcp_packet: TCPPacket
+        ip: IPv4Address,
+        port: int,
+        state: PortState,
+        method: PortScanMethod,
+        icmp: ICMPPacket | None,
+        tcp: TCPPacket | None
     ):
-        self.port_state = port_state
-        self.dst_ip = dst_ip
-        self.dst_port = dst_port
-        self.icmp_packet = icmp_packet
-        self.tcp_packet = tcp_packet
-        self.scan_method = scan_method
+        self.ip = ip
+        self.port = port
+        self.state = state
+        self.method = method
+        self.icmp = icmp
+        self.tcp = tcp
 
     def __str__(self) -> str:
-        return f"{self.dst_ip}:{self.dst_port} -> {self.port_state}"
+        return f"[{self.method}] {self.ip}:{self.port} -> {self.state}"
+
+
+class PortScanConclusion():
+
+    def __init__(self, port: int, result: List[PortScanResult]):
+        self.port = port
+        self.result = result
+
+    def __eq__(self, o: PortScanResult) -> bool:
+        self.port == o.port
+
+    def __lt__(self, o: PortScanResult) -> bool:
+        self.port < o.port
+
+    def __le__(self, o: PortScanResult) -> bool:
+        self.port <= o.port
+
+    def __gt__(self, o: PortScanResult) -> bool:
+        self.port > o.port
+
+    def __ge__(self, o: PortScanResult) -> bool:
+        self.port >= o.port
