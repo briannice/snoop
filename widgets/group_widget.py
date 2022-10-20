@@ -10,4 +10,4 @@ class GroupWidget(QGroupBox):
         self.font = QFont()
         self.font.setPointSize(12)
         self.setFont(self.font)
-        self.setContentsMargins(50, 50, 50, 25)
+        self.setContentsMargins(50, 30, 50, 25)

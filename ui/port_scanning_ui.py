@@ -1,4 +1,4 @@
-from widgets import ButtonWidget, GroupWidget, HLineWidget, LabelWidget, TabWidget, TextWidget
+from widgets import ButtonWidget, GroupWidget, LabelWidget, ListWidget, TabWidget, TextWidget
 from widgets.input import CheckboxInputWidget, TextInputWidget
 from widgets.layout import GLayoutWidget, HLayoutWidget, VLayoutWidget
 
@@ -59,14 +59,14 @@ class PortScanningUi(TabWidget):
         self.SelectPacketsLayout.addWidget(self.SelectPacketsFinCheckbox, 1, 3)
         self.SelectPacketsLayout.addWidget(self.SelectPacketsAckCheckbox, 1, 4)
 
-        self.SelectPacketsGroup = GroupWidget("Packets")
+        self.SelectPacketsGroup = GroupWidget()
         self.SelectPacketsGroup.setLayout(self.SelectPacketsLayout)
 
         # Output
-        self.OutputText = TextWidget()
+        self.OutputList = ListWidget()
 
         self.OutputTextLayout = VLayoutWidget()
-        self.OutputTextLayout.addWidget(self.OutputText)
+        self.OutputTextLayout.addWidget(self.OutputList)
 
         # Buttons
         self.ButtonScan = ButtonWidget("Start scan")
