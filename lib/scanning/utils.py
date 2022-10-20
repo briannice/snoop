@@ -16,11 +16,33 @@ class PortState(Enum):
     UNFILTERED = "UNFILTERED"
     OPEN_FILTERED = "OPEN | FILTERED"
     CLOSED_FILTERED = "CLOSED | FILTERED"
+    INTERNAL_ERROR = "INTERNAL ERROR"
 
 
 class PortScanMethod(Enum):
     CONNECT = "CONNECT"
     STEALTH = "STEALTH"
+    XMAS = "XMAS"
+    FIN = "FIN"
+    ACK = "ACK"
+
+    @staticmethod
+    def dict_to_list(dct):
+        result = []
+        for k, v in dct.items():
+            if v:
+                match k:
+                    case "ack":
+                        result.append(PortScanMethod.ACK)
+                    case "connect":
+                        result.append(PortScanMethod.CONNECT)
+                    case "stealth":
+                        result.append(PortScanMethod.STEALTH)
+                    case "fin":
+                        result.append(PortScanMethod.FIN)
+                    case "xmas":
+                        result.append(PortScanMethod.XMAS)
+        return result
 
 
 class TCPFlags():
@@ -101,6 +123,9 @@ class TCPPacket():
         self.dst_port = dst_port
         self.flags = flags
 
+    def __str__(self) -> str:
+        return f"{self.src_ip}:{self.src_port} -> {self.dst_ip}:{self.dst_port} [ flags={self.flags} ]"
+
 
 class HostScanResult():
 
@@ -108,8 +133,8 @@ class HostScanResult():
         self,
         dst_ip: IPv4Address,
         host_state: HostState,
-        icmp_packet: ICMPPacket,
-        tcp_packet: TCPPacket
+        icmp_packet: ICMPPacket | None,
+        tcp_packet: TCPPacket | None
     ):
         self.host_state = host_state
         self.dst_ip = dst_ip
@@ -144,8 +169,8 @@ class PortScanResult():
         dst_port: int,
         port_state: PortState,
         scan_method: PortScanMethod,
-        icmp_packet: ICMPPacket,
-        tcp_packet: TCPPacket
+        icmp_packet: ICMPPacket | None,
+        tcp_packet: TCPPacket | None
     ):
         self.port_state = port_state
         self.dst_ip = dst_ip

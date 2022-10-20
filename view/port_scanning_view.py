@@ -16,31 +16,42 @@ class PortScanningView(PortScanningUi):
 
         # Data
         self.port_scan_results = []
+        self.is_scanning = False
 
         # Handlers
         self.ButtonScan.clicked.connect(self.handler_scan_button)
+        self.ButtonClear.clicked.connect(self.handler_clear_button)
 
     # ------------- #
     #    HANDLERS   #
     # ------------- #
 
     def handler_scan_button(self):
+        # Dont scan if already scanning
+        if self.is_scanning:
+            return
 
         # Validation
-        self.validate()
+        if not self.validate():
+            return
 
         # Get data
         ip = self.SelectHostTextInput.text()
         ports = self.get_selected_ports()
-        packets = [cb.isChecked() for cb in self.get_packet_checkboxes()]
+        packets = self.get_packet_checkbox_statuses()
 
         # Start worker
-        worker = PortScanningWorker()
+        worker = PortScanningWorker(ip, ports, packets)
+        worker.signals.data.connect(self.handler_signals_data)
         self.thread_pool.start(worker)
 
-    def handler_port_scan_results(self, data):
-        for d in data:
-            print(data)
+    def handler_clear_button(self):
+        self.OutputText.clear()
+
+    def handler_signals_data(self, data):
+        for k, v in data.items():
+            for p in v:
+                self.OutputText.append(f"[{k}] {p}")
 
     # ---------------- #
     #    VALIDATION    #
@@ -140,5 +151,5 @@ class PortScanningView(PortScanningUi):
                 max = int(t.split("-")[1])
                 result.extend(range(min, max + 1))
             else:
-                result.append(str(t))
+                result.append(int(t))
         return result

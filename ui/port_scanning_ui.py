@@ -88,9 +88,18 @@ class PortScanningUi(TabWidget):
 
     def get_packet_checkboxes(self):
         return [
-            self.SelectPacketsAckCheckbox,
             self.SelectPacketsConnectCheckbox,
             self.SelectPacketsStealthCheckbox,
             self.SelectPacketsFinCheckbox,
-            self.SelectPacketsXmasCheckbox
+            self.SelectPacketsXmasCheckbox,
+            self.SelectPacketsAckCheckbox,
         ]
+
+    def get_packet_checkbox_statuses(self):
+        return {
+            "ack": self.SelectPacketsAckCheckbox.isChecked(),
+            "connect": self.SelectPacketsConnectCheckbox.isChecked(),
+            "stealth": self.SelectPacketsStealthCheckbox.isChecked(),
+            "fin": self.SelectPacketsFinCheckbox.isChecked(),
+            "xmas": self.SelectPacketsXmasCheckbox.isChecked(),
+        }
