@@ -1,6 +1,5 @@
 from ipaddress import IPv4Address
-from time import time
-from scapy.all import ICMP, IP, sr1, TCP
+from scapy.all import ICMP, IP, send, sr1, TCP
 
 from .utils import ICMPPacket, PortScanMethod, PortScanResult, PortState, TCPFlags, TCPPacket
 
@@ -30,23 +29,29 @@ def stealth_scan(ip: IPv4Address, port: int) -> PortScanResult:
                 )
 
                 if 'SYN' in flags:
-                    return PortScanResult(
-                        dst_ip=ip,
-                        dst_port=port,
-                        port_state=PortState.OPEN,
-                        scan_method=PortScanMethod.STEALTH,
-                        icmp_packet=None,
-                        tcp_packet=tcp_packet
+                    result = PortScanResult(
+                        ip=ip,
+                        port=port,
+                        state=PortState.OPEN,
+                        method=PortScanMethod.STEALTH,
+                        icmp=None,
+                        tcp=tcp_packet
                     )
+
+                    flags = TCPFlags.to_bytes(["RST"])
+                    packet = IP(dst=str(ip)) / TCP(flags=flags, dport=port)
+                    send(packet, verbose=0)
+
+                    return result
 
                 if "RST" in flags:
                     return PortScanResult(
-                        dst_ip=ip,
-                        dst_port=port,
-                        port_state=PortState.CLOSED,
-                        scan_method=PortScanMethod.STEALTH,
-                        icmp_packet=None,
-                        tcp_packet=tcp_packet
+                        ip=ip,
+                        port=port,
+                        state=PortState.CLOSED,
+                        method=PortScanMethod.STEALTH,
+                        icmp=None,
+                        tcp=tcp_packet
                     )
 
             if res.haslayer(ICMP):
@@ -61,29 +66,30 @@ def stealth_scan(ip: IPv4Address, port: int) -> PortScanResult:
                 )
 
                 return PortScanResult(
-                    dst_ip=ip,
-                    dst_port=port,
-                    port_state=PortState.FILTERED,
-                    scan_method=PortScanMethod.STEALTH,
-                    icmp_packet=icmp_packet,
-                    tcp_packet=None
+                    ip=ip,
+                    port=port,
+                    state=PortState.FILTERED,
+                    method=PortScanMethod.STEALTH,
+                    icmp=icmp_packet,
+                    tcp=None
                 )
 
         return PortScanResult(
-            dst_ip=ip,
-            dst_port=port,
-            port_state=PortState.FILTERED,
-            scan_method=PortScanMethod.STEALTH,
-            icmp_packet=None,
-            tcp_packet=None
+            ip=ip,
+            port=port,
+            state=PortState.FILTERED,
+            method=PortScanMethod.STEALTH,
+            icmp=None,
+            tcp=None
         )
 
     except Exception as e:
+        print(e)
         return PortScanResult(
-            dst_ip=ip,
-            dst_port=port,
-            port_state=PortState.INTERNAL_ERROR,
-            scan_method=PortScanMethod.STEALTH,
-            icmp_packet=None,
-            tcp_packet=None
+            ip=ip,
+            port=port,
+            state=PortState.INTERNAL_ERROR,
+            method=PortScanMethod.STEALTH,
+            icmp=None,
+            tcp=None
         )

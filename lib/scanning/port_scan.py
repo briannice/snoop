@@ -8,7 +8,6 @@ from utils import SnoopException
 
 
 def port_scan(ip: IPv4Address, port: int, method: PortScanMethod):
-
     match method:
         case PortScanMethod.CONNECT:
             return connect_scan(ip, port)

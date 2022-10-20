@@ -1,7 +1,9 @@
 from ipaddress import IPv4Address
+from typing import List
 
 from PyQt5.QtCore import QThreadPool
 
+from lib.scanning import PortScanConclusion
 from ui import PortScanningUi
 from workers import PortScanningWorker
 
@@ -15,8 +17,8 @@ class PortScanningView(PortScanningUi):
         self.thread_pool = QThreadPool()
 
         # Data
-        self.port_scan_results = []
-        self.is_scanning = False
+        self.results: List[PortScanConclusion] = []
+        self.is_scanning: bool = False
 
         # Handlers
         self.ButtonScan.clicked.connect(self.handler_scan_button)
@@ -30,6 +32,7 @@ class PortScanningView(PortScanningUi):
         # Dont scan if already scanning
         if self.is_scanning:
             return
+        self.is_scanning = True
 
         # Validation
         if not self.validate():
@@ -44,18 +47,23 @@ class PortScanningView(PortScanningUi):
         worker = PortScanningWorker(ip, ports, packets)
         worker.signals.data.connect(self.handler_signals_data)
         self.thread_pool.start(worker)
+        self.thread_pool.waitForDone()
+        self.is_scanning = False
 
     def handler_clear_button(self):
         self.OutputText.clear()
 
-    def handler_signals_data(self, data):
-        for k, v in data.items():
-            for p in v:
-                self.OutputText.append(f"[{k}] {p}")
+    def handler_signals_data(self, data: List[PortScanConclusion]):
+        data.sort()
+        self.results = data
 
-    # ---------------- #
-    #    VALIDATION    #
-    # ---------------- #
+    # ---------- #
+    #    VIEW    #
+    # ---------- #
+
+    # ------------- #
+    #    HANDLERS   #
+    # ------------- #
 
     def validate(self) -> bool:
         v1 = self.validate_select_host_text_input()
