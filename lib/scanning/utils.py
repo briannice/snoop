@@ -2,6 +2,8 @@ from enum import Enum
 from ipaddress import IPv4Address
 from typing import List
 
+from utils import SnoopException
+
 
 class HostState(Enum):
     UP = "UP"
@@ -31,6 +33,7 @@ class PortScanMethod(Enum):
     XMAS = "XMAS"
     FIN = "FIN"
     ACK = "ACK"
+    NULL = "NULL"
 
     def __str__(self) -> str:
         return self.value
@@ -51,6 +54,8 @@ class PortScanMethod(Enum):
                         result.append(PortScanMethod.FIN)
                     case "xmas":
                         result.append(PortScanMethod.XMAS)
+                    case "null":
+                        result.append(PortScanMethod.NULL)
         return result
 
 
@@ -189,7 +194,7 @@ class PortScanResult():
         self.tcp = tcp
 
     def __str__(self) -> str:
-        return f"{self.method}   →   {self.state}"
+        return f"{self.method: <10}   →   {self.state}"
 
 
 class PortScanConclusion():
@@ -202,7 +207,7 @@ class PortScanConclusion():
     def __str__(self) -> str:
         result = ""
 
-        result += f"{self.port}   →   {self.state}\n"
+        result += f"{self.port: <12}   →   {self.state}\n"
 
         l = len(result)
         result += "-" * l + "\n"
@@ -214,16 +219,33 @@ class PortScanConclusion():
                 result += "\n"
         return result
 
-    def get_global_state(self):
+    def get_global_state(self) -> List[str]:
+        result = set(["OPEN", "CLOSED", "FILTERED"])
         for r in self.results:
-            if r.state == PortState.OPEN:
-                return PortState.OPEN
-        for r in self.results:
-            if r.state == PortState.CLOSED:
-                return PortState.CLOSED
-        return PortState.FILTERED
+            match r.state.value:
+                case "OPEN":
+                    return "OPEN"
+                case "CLOSED":
+                    return "CLOSED"
+                case "UNFILTERED":
+                    result = result.intersection(["OPEN", "CLOSED"])
+                case "OPEN | FILTERED":
+                    result = result.intersection(["OPEN", "FILTERED"])
+                case "CLOSED | FILTERED":
+                    result = result.intersection(["CLOSED", "FILTERED"])
+
+        if len(result) == 3:
+            result = set(["FILTERED"])
+
+        result_str = ""
+        for r in result:
+            result_str += r
+            result_str += " | "
+        if len(result_str) > 0:
+            result_str = result_str[:len(result_str) - 2]
+        return result_str
 
     def is_important(self):
-        if self.state == PortState.FILTERED:
+        if "FILTERED" in self.state:
             return False
         return True

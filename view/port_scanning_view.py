@@ -41,6 +41,10 @@ class PortScanningView(PortScanningUi):
         # Clear current output
         self.OutputList.clear()
 
+        # Start scanning info
+        self.ScanningInfoLabel.setText("Scanning...")
+        self.ScanningInfoLabel.setType("info")
+
         # Get data
         ip = self.SelectHostTextInput.text()
         ports = self.get_selected_ports()
@@ -56,6 +60,8 @@ class PortScanningView(PortScanningUi):
         self.OutputList.clear()
 
     def handler_signals_data(self, data: List[PortScanConclusion]):
+        self.ScanningInfoLabel.setText("Scanning done!")
+        self.ScanningInfoLabel.setType("success")
         self.is_scanning = False
         self.results = data
         self.update_output_list()

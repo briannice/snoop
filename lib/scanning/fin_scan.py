@@ -4,9 +4,9 @@ from scapy.all import ICMP, IP, sr1, TCP
 from .utils import ICMPPacket, PortScanMethod, PortScanResult, PortState, TCPFlags, TCPPacket
 
 
-def ack_scan(ip: IPv4Address, port: int) -> PortScanResult:
+def fin_scan(ip: IPv4Address, port: int) -> PortScanResult:
     try:
-        flags = TCPFlags.to_bytes(["ACK"])
+        flags = TCPFlags.to_bytes(["FIN"])
         packet = IP(dst=str(ip)) / TCP(flags=flags, dport=port)
         res = sr1(packet, timeout=2, verbose=0)
 
@@ -32,8 +32,8 @@ def ack_scan(ip: IPv4Address, port: int) -> PortScanResult:
                     return PortScanResult(
                         ip=ip,
                         port=port,
-                        state=PortState.UNFILTERED,
-                        method=PortScanMethod.ACK,
+                        state=PortState.CLOSED,
+                        method=PortScanMethod.FIN,
                         icmp=None,
                         tcp=tcp_packet
                     )
@@ -53,7 +53,7 @@ def ack_scan(ip: IPv4Address, port: int) -> PortScanResult:
                     ip=ip,
                     port=port,
                     state=PortState.FILTERED,
-                    method=PortScanMethod.ACK,
+                    method=PortScanMethod.FIN,
                     icmp=icmp_packet,
                     tcp=None
                 )
@@ -61,8 +61,8 @@ def ack_scan(ip: IPv4Address, port: int) -> PortScanResult:
         return PortScanResult(
             ip=ip,
             port=port,
-            state=PortState.FILTERED,
-            method=PortScanMethod.ACK,
+            state=PortState.OPEN_FILTERED,
+            method=PortScanMethod.FIN,
             icmp=None,
             tcp=None
         )
@@ -73,7 +73,7 @@ def ack_scan(ip: IPv4Address, port: int) -> PortScanResult:
             ip=ip,
             port=port,
             state=PortState.INTERNAL_ERROR,
-            method=PortScanMethod.ACK,
+            method=PortScanMethod.FIN,
             icmp=None,
             tcp=None
         )
