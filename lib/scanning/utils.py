@@ -2,6 +2,8 @@ from enum import Enum
 from ipaddress import IPv4Address
 from typing import List
 
+from utils import SnoopException
+
 
 class HostState(Enum):
     UP = "UP"
@@ -23,6 +25,25 @@ class PortState(Enum):
 
     def __str__(self) -> str:
         return self.value
+
+    def get_possible_states(self):
+        match self.value:
+            case "OPEN":
+                return set(["OPEN"])
+            case "CLOSED":
+                return set(["CLOSED"])
+            case "FILTERED":
+                return set(["FILTERED"])
+            case "UNFILTERED":
+                return set(["OPEN", "CLOSED"])
+            case "OPEN | FILTERED":
+                return set(["OPEN", "FILTERED"])
+            case "CLOSED | FILTERED":
+                return set(["CLOSED", "FILTERED"])
+            case "INTERNAL ERROR":
+                return set([])
+            case _:
+                raise SnoopException("Invalid Portstate")
 
 
 class PortScanMethod(Enum):
@@ -217,16 +238,30 @@ class PortScanConclusion():
                 result += "\n"
         return result
 
-    def get_global_state(self):
+    def get_global_state(self) -> List[str]:
+        result = set(["OPEN", "CLOSED", "FILTERED"])
         for r in self.results:
-            if r.state == PortState.OPEN:
-                return PortState.OPEN
-        for r in self.results:
-            if r.state == PortState.CLOSED:
-                return PortState.CLOSED
-        return PortState.FILTERED
+            possible_states = r.state.get_possible_states()
+            if len(possible_states) == 0:
+                continue
+            if len(possible_states) == 1:
+                if "FILTERED" in possible_states:
+                    continue
+                else:
+                    for state in possible_states:
+                        return state
+            result = result.intersection(possible_states)
+        if len(result) == 3:
+            result = set(["FILTERED"])
+        result_str = ""
+        for r in result:
+            result_str += r
+            result_str += " | "
+        if len(result_str) > 0:
+            result_str = result_str[:len(result_str) - 2]
+        return result_str
 
     def is_important(self):
-        if self.state == PortState.FILTERED:
+        if "FILTERED" in self.state:
             return False
         return True
