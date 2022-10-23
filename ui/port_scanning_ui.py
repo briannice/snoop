@@ -15,12 +15,12 @@ class PortScanningUi(TabWidget):
         self.SelectHostLabel = LabelWidget("Host", type="label")
         self.SelectHostTextInput = TextInputWidget()
         self.SelectHostError = LabelWidget("", type="error")
-        self.SelectHostInfo = LabelWidget("Example: 192.168.56.1", type="info")
+        self.SelectHostInfo = LabelWidget("Example: 192.168.56.1", type="help")
 
         self.SelectPortLabel = LabelWidget("Ports", type="label")
         self.SelectPortTextInput = TextInputWidget()
         self.SelectPortError = LabelWidget("", type="error")
-        self.SelectPortInfo = LabelWidget("Using individual ports: 22,23,80\nUsing ranges: 22-24,80", type="info")
+        self.SelectPortInfo = LabelWidget("Using individual ports: 22,23,80\nUsing ranges: 22-24,80", type="help")
 
         self.SelectHostLayout = GLayoutWidget(h_spacing="sm", v_spacing="sm")
 
@@ -39,12 +39,14 @@ class PortScanningUi(TabWidget):
         self.SelectPacketsConnectLabel = LabelWidget("Connect")
         self.SelectPacketsXmasLabel = LabelWidget("Xmas")
         self.SelectPacketsFinLabel = LabelWidget("FIN")
+        self.SelectPacketsNullLabel = LabelWidget("NULL")
         self.SelectPacketsAckLabel = LabelWidget("ACK")
 
         self.SelectPacketsStealthCheckbox = CheckboxInputWidget()
         self.SelectPacketsConnectCheckbox = CheckboxInputWidget()
         self.SelectPacketsXmasCheckbox = CheckboxInputWidget()
         self.SelectPacketsFinCheckbox = CheckboxInputWidget()
+        self.SelectPacketsNullCheckbox = CheckboxInputWidget()
         self.SelectPacketsAckCheckbox = CheckboxInputWidget()
 
         self.SelectPacketsLayout = GLayoutWidget(v_spacing="sm")
@@ -52,15 +54,23 @@ class PortScanningUi(TabWidget):
         self.SelectPacketsLayout.addWidget(self.SelectPacketsConnectLabel, 0, 1)
         self.SelectPacketsLayout.addWidget(self.SelectPacketsXmasLabel, 0, 2)
         self.SelectPacketsLayout.addWidget(self.SelectPacketsFinLabel, 0, 3)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsAckLabel, 0, 4)
+        self.SelectPacketsLayout.addWidget(self.SelectPacketsNullLabel, 0, 4)
+        self.SelectPacketsLayout.addWidget(self.SelectPacketsAckLabel, 0, 5)
         self.SelectPacketsLayout.addWidget(self.SelectPacketsStealthCheckbox, 1, 0)
         self.SelectPacketsLayout.addWidget(self.SelectPacketsConnectCheckbox, 1, 1)
         self.SelectPacketsLayout.addWidget(self.SelectPacketsXmasCheckbox, 1, 2)
         self.SelectPacketsLayout.addWidget(self.SelectPacketsFinCheckbox, 1, 3)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsAckCheckbox, 1, 4)
+        self.SelectPacketsLayout.addWidget(self.SelectPacketsNullCheckbox, 1, 4)
+        self.SelectPacketsLayout.addWidget(self.SelectPacketsAckCheckbox, 1, 5)
 
         self.SelectPacketsGroup = GroupWidget()
         self.SelectPacketsGroup.setLayout(self.SelectPacketsLayout)
+
+        # Scanning info
+        self.ScanningInfoLabel = LabelWidget("", type="info")
+
+        self.ScanningInfoLayout = VLayoutWidget()
+        self.ScanningInfoLayout.addWidget(self.ScanningInfoLabel)
 
         # Output
         self.OutputList = ListWidget()
@@ -81,6 +91,7 @@ class PortScanningUi(TabWidget):
         self.Layout.addWidget(self.Title)
         self.Layout.addLayout(self.SelectHostLayout)
         self.Layout.addWidget(self.SelectPacketsGroup)
+        self.Layout.addLayout(self.ScanningInfoLayout)
         self.Layout.addLayout(self.OutputTextLayout)
         self.Layout.addLayout(self.ButtonsLayout)
 
@@ -93,6 +104,7 @@ class PortScanningUi(TabWidget):
             self.SelectPacketsFinCheckbox,
             self.SelectPacketsXmasCheckbox,
             self.SelectPacketsAckCheckbox,
+            self.SelectPacketsNullCheckbox,
         ]
 
     def get_packet_checkbox_statuses(self):
@@ -102,4 +114,5 @@ class PortScanningUi(TabWidget):
             "stealth": self.SelectPacketsStealthCheckbox.isChecked(),
             "fin": self.SelectPacketsFinCheckbox.isChecked(),
             "xmas": self.SelectPacketsXmasCheckbox.isChecked(),
+            "null": self.SelectPacketsNullCheckbox.isChecked(),
         }

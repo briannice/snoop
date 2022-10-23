@@ -52,6 +52,8 @@ class PortScanMethod(Enum):
                         result.append(PortScanMethod.FIN)
                     case "xmas":
                         result.append(PortScanMethod.XMAS)
+                    case "null":
+                        result.append(PortScanMethod.NULL)
         return result
 
 
