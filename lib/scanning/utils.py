@@ -31,6 +31,7 @@ class PortScanMethod(Enum):
     XMAS = "XMAS"
     FIN = "FIN"
     ACK = "ACK"
+    NULL = "NULL"
 
     def __str__(self) -> str:
         return self.value
