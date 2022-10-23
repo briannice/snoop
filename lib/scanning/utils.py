@@ -26,25 +26,6 @@ class PortState(Enum):
     def __str__(self) -> str:
         return self.value
 
-    def get_possible_states(self):
-        match self.value:
-            case "OPEN":
-                return set(["OPEN"])
-            case "CLOSED":
-                return set(["CLOSED"])
-            case "FILTERED":
-                return set(["FILTERED"])
-            case "UNFILTERED":
-                return set(["OPEN", "CLOSED"])
-            case "OPEN | FILTERED":
-                return set(["OPEN", "FILTERED"])
-            case "CLOSED | FILTERED":
-                return set(["CLOSED", "FILTERED"])
-            case "INTERNAL ERROR":
-                return set([])
-            case _:
-                raise SnoopException("Invalid Portstate")
-
 
 class PortScanMethod(Enum):
     CONNECT = "CONNECT"
@@ -213,7 +194,7 @@ class PortScanResult():
         self.tcp = tcp
 
     def __str__(self) -> str:
-        return f"{self.method}   →   {self.state}"
+        return f"{self.method: <10}   →   {self.state}"
 
 
 class PortScanConclusion():
@@ -226,7 +207,7 @@ class PortScanConclusion():
     def __str__(self) -> str:
         result = ""
 
-        result += f"{self.port}   →   {self.state}\n"
+        result += f"{self.port: <12}   →   {self.state}\n"
 
         l = len(result)
         result += "-" * l + "\n"
@@ -241,18 +222,21 @@ class PortScanConclusion():
     def get_global_state(self) -> List[str]:
         result = set(["OPEN", "CLOSED", "FILTERED"])
         for r in self.results:
-            possible_states = r.state.get_possible_states()
-            if len(possible_states) == 0:
-                continue
-            if len(possible_states) == 1:
-                if "FILTERED" in possible_states:
-                    continue
-                else:
-                    for state in possible_states:
-                        return state
-            result = result.intersection(possible_states)
+            match r.state.value:
+                case "OPEN":
+                    return "OPEN"
+                case "CLOSED":
+                    return "CLOSED"
+                case "UNFILTERED":
+                    result = result.intersection(["OPEN", "CLOSED"])
+                case "OPEN | FILTERED":
+                    result = result.intersection(["OPEN", "FILTERED"])
+                case "CLOSED | FILTERED":
+                    result = result.intersection(["CLOSED", "FILTERED"])
+
         if len(result) == 3:
             result = set(["FILTERED"])
+
         result_str = ""
         for r in result:
             result_str += r
