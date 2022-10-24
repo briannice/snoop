@@ -1,7 +1,10 @@
 from ipaddress import IPv4Address
 from scapy.all import ICMP, IP, sr1, TCP
 
-from .utils import ICMPPacket, PortScanMethod, PortScanResult, PortState, TCPFlags, TCPPacket
+from models.enums import PortScanMethod, PortState
+from models.results import PortScanResult
+from models.utils import TCPFlags
+from models.packets import TCPPacket, ICMPPacket
 
 
 def ack_scan(ip: IPv4Address, port: int) -> PortScanResult:

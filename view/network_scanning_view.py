@@ -2,7 +2,7 @@ from typing import List
 
 from PyQt5.QtCore import QThreadPool
 
-from lib.scanning import HostScanResult
+from models.results import HostScanResult
 from ui import NetworkScanningUi
 from workers import NetworkScanningWorker
 

@@ -4,7 +4,8 @@ from typing import List
 
 from PyQt5.QtCore import QRunnable, pyqtSlot
 
-from lib.scanning import HostScanResult, ping_scan
+from models.results import HostScanResult
+from lib.scanning import ping_scan
 from signals import NetworkScanningSignal
 
 

@@ -3,7 +3,9 @@ from typing import List
 
 from PyQt5.QtCore import QRunnable, pyqtSlot
 
-from lib.scanning import port_scan, PortScanMethod, PortScanResult, PortScanConclusion
+from models.enums import PortScanMethod
+from models.results import PortScanResult, PortScanConclusion
+from lib.scanning import port_scan
 from signals import PortScanningSignal
 
 

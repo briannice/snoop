@@ -3,7 +3,7 @@ from typing import List
 
 from PyQt5.QtCore import QThreadPool
 
-from lib.scanning import PortScanConclusion
+from models.results import PortScanConclusion
 from ui import PortScanningUi
 from utils import port_input_validator
 from workers import PortScanningWorker
