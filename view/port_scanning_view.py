@@ -5,6 +5,7 @@ from PyQt5.QtCore import QThreadPool
 
 from lib.scanning import PortScanConclusion
 from ui import PortScanningUi
+from utils import port_input_validator
 from workers import PortScanningWorker
 
 
@@ -75,9 +76,9 @@ class PortScanningView(PortScanningUi):
             if r.is_important():
                 self.OutputList.addItem(str(r))
 
-    # ------------- #
-    #    HANDLERS   #
-    # ------------- #
+    # --------------- #
+    #    VALIDATORS   #
+    # --------------- #
 
     def validate(self) -> bool:
         v1 = self.validate_select_host_text_input()
@@ -98,57 +99,15 @@ class PortScanningView(PortScanningUi):
             return False
 
     def validate_select_port_text_input(self) -> bool:
-        chars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", ","]
-        max = 65535
-        min = 1
-
         text = self.SelectPortTextInput.text()
+        error = port_input_validator(text)
 
-        if text == "":
-            self.SelectPortError.setText("Ports can not be empty")
+        if error is None:
+            self.SelectPortError.setText("")
+            self.SelectHostLayout.removeWidget(self.SelectPortError)
+        else:
+            self.SelectPortError.setText(error)
             self.SelectHostLayout.addWidget(self.SelectPortError, 3, 0, 1, 2)
-            return False
-
-        for c in text:
-            if c not in chars:
-                self.SelectPortError.setText("Ports can only contain numbers, '-' and ','")
-                self.SelectHostLayout.addWidget(self.SelectPortError, 3, 0, 1, 2)
-                return False
-
-        for t in text.split(","):
-            if t == "":
-                self.SelectPortError.setText("Port range can not be empty")
-                self.SelectHostLayout.addWidget(self.SelectPortError, 3, 0, 1, 2)
-                return False
-
-            if "," in t:
-                self.SelectPortError.setText("Port range can not contain ','")
-                self.SelectHostLayout.addWidget(self.SelectPortError, 3, 0, 1, 2)
-                return False
-
-            count = t.count("-")
-            if count == 0:
-                p = int(t)
-                if p < min or p > max:
-                    self.SelectPortError.setText("Port range can not contain ','")
-                    self.SelectHostLayout.addWidget(self.SelectPortError, 3, 0, 1, 2)
-                    return False
-            elif count == 1:
-                ps = t.split("-")
-                for p in ps:
-                    p = int(p)
-                    if p < min or p > max:
-                        self.SelectPortError.setText("Port range can not contain ','")
-                        self.SelectHostLayout.addWidget(self.SelectPortError, 3, 0, 1, 2)
-                        return False
-            else:
-                self.SelectPortError.setText("Port range can only contain one '-'")
-                self.SelectHostLayout.addWidget(self.SelectPortError, 3, 0, 1, 2)
-                return False
-
-        self.SelectPortError.setText("")
-        self.SelectHostLayout.removeWidget(self.SelectPortError)
-        return True
 
     def validate_select_packets(self) -> bool:
         for cb in self.get_packet_checkboxes():

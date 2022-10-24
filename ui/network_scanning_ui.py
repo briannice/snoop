@@ -1,4 +1,4 @@
-from widgets import ButtonWidget, HLineWidget, LabelWidget, TabWidget, TextWidget
+from widgets import ButtonWidget, GroupWidget, LabelWidget, TabWidget, TextWidget
 from widgets.input import CheckboxInputWidget, TextInputWidget
 from widgets.layout import GLayoutWidget, HLayoutWidget, VLayoutWidget
 
@@ -8,17 +8,21 @@ class NetworkScanningUi(TabWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Select network
-        self.SelectNetworkTitle = LabelWidget("Network", type="section")
-        self.SelectNetworkTextInput = TextInputWidget()
-        self.SelectNetworkError = LabelWidget("Network invalid!", type="error")
+        # Title
+        self.Title = LabelWidget("Network scanning", type="title")
 
-        self.SelectNetworkLayout = VLayoutWidget(spacing="sm")
-        self.SelectNetworkLayout.addWidget(self.SelectNetworkTextInput)
-        self.SelectNetworkLayout.addWidget(self.SelectNetworkError)
+        # Select network
+        self.SelectNetworkLabel = LabelWidget("Host", type="label")
+        self.SelectNetworkTextInput = TextInputWidget()
+        self.SelectNetworkError = LabelWidget("", type="error")
+        self.SelectNetworkInfo = LabelWidget("Example: 192.168.56.1", type="help")
+
+        self.SelectNetworkLayout = GLayoutWidget(h_spacing="sm", v_spacing="sm")
+        self.SelectNetworkLayout.addWidget(self.SelectNetworkLabel, 0, 0, 1, 1)
+        self.SelectNetworkLayout.addWidget(self.SelectNetworkTextInput, 0, 1, 1, 1)
+        self.SelectNetworkLayout.addWidget(self.SelectNetworkInfo, 0, 2, 1, 1)
 
         # Select packets
-        self.SelectPacketsTitle = LabelWidget("Packets", type="section")
         self.SelectPacketsError = LabelWidget("", type="error")
 
         self.SelectPacketsPingLabel = LabelWidget("Ping")
@@ -40,10 +44,10 @@ class NetworkScanningUi(TabWidget):
         self.SelectPacketsLayout.addWidget(self.SelectPacketsSshCheckbox, 1, 1)
         self.SelectPacketsLayout.addWidget(self.SelectPacketsHttpCheckbox, 1, 2)
         self.SelectPacketsLayout.addWidget(self.SelectPacketsHttpsCheckbox, 1, 3)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsError, 2, 0, 1, 4)
+
+        self.SelectPacketsGroup = GroupWidget("Select protocols", self.SelectPacketsLayout)
 
         # Filter
-        self.FilterTitle = LabelWidget("Filter", type="section")
         self.FilterError = LabelWidget("", type="error")
 
         self.FilterUpLabel = LabelWidget("UP")
@@ -61,7 +65,8 @@ class NetworkScanningUi(TabWidget):
         self.FilterLayout.addWidget(self.FilterUpCheckbox, 1, 0)
         self.FilterLayout.addWidget(self.FilterUnknownCheckbox, 1, 1)
         self.FilterLayout.addWidget(self.FilterBlockedCheckbox, 1, 2)
-        self.FilterLayout.addWidget(self.FilterError, 2, 0, 1, 4)
+
+        self.FilterGroup = GroupWidget("Filter results", self.FilterLayout)
 
         # Result
         self.OutputText = TextWidget()
@@ -79,14 +84,10 @@ class NetworkScanningUi(TabWidget):
 
         # Self
         self.Layout = VLayoutWidget()
-        self.Layout.addWidget(self.SelectNetworkTitle)
+        self.Layout.addWidget(self.Title)
         self.Layout.addLayout(self.SelectNetworkLayout)
-        self.Layout.addWidget(HLineWidget())
-        self.Layout.addWidget(self.SelectPacketsTitle)
-        self.Layout.addLayout(self.SelectPacketsLayout)
-        self.Layout.addWidget(HLineWidget())
-        self.Layout.addWidget(self.FilterTitle)
-        self.Layout.addLayout(self.FilterLayout)
+        self.Layout.addWidget(self.SelectPacketsGroup)
+        self.Layout.addWidget(self.FilterGroup)
         self.Layout.addLayout(self.OutputLayout)
         self.Layout.addLayout(self.ButtonsLayout)
 

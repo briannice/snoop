@@ -63,8 +63,7 @@ class PortScanningUi(TabWidget):
         self.SelectPacketsLayout.addWidget(self.SelectPacketsNullCheckbox, 1, 4)
         self.SelectPacketsLayout.addWidget(self.SelectPacketsAckCheckbox, 1, 5)
 
-        self.SelectPacketsGroup = GroupWidget()
-        self.SelectPacketsGroup.setLayout(self.SelectPacketsLayout)
+        self.SelectPacketsGroup = GroupWidget("Select packets", self.SelectPacketsLayout)
 
         # Scanning info
         self.ScanningInfoLabel = LabelWidget("", type="info")
