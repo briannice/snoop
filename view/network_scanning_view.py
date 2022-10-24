@@ -30,18 +30,9 @@ class NetworkScanningView(NetworkScanningUi):
         self.ButtonScan.clicked.connect(self.handler_button_scan)
         self.ButtonClear.clicked.connect(self.handler_button_clear)
 
-        self.SelectPacketsPingCheckbox.clicked.connect(self.handler_select_packet_change)
-        self.SelectPacketsSshCheckbox.clicked.connect(self.handler_select_packet_change)
-        self.SelectPacketsHttpCheckbox.clicked.connect(self.handler_select_packet_change)
-        self.SelectPacketsHttpsCheckbox.clicked.connect(self.handler_select_packet_change)
-
-        self.FilterUpCheckbox.clicked.connect(self.update_output_text)
-        self.FilterUnknownCheckbox.clicked.connect(self.update_output_text)
-        self.FilterBlockedCheckbox.clicked.connect(self.update_output_text)
-
-        self.FilterUpCheckbox.clicked.connect(self.handler_filter_change)
-        self.FilterUnknownCheckbox.clicked.connect(self.handler_filter_change)
-        self.FilterBlockedCheckbox.clicked.connect(self.handler_filter_change)
+    # ------------- #
+    #    HANDLERS   #
+    # ------------- #
 
     def handler_button_scan(self):
         worker = NetworkScanningWorker()
@@ -54,6 +45,10 @@ class NetworkScanningView(NetworkScanningUi):
     def handler_scan_data(self, data):
         self.host_scan_results = data
         self.update_output_text()
+
+    # ---------- #
+    #    VIEW    #
+    # ---------- #
 
     def update_output_text(self):
         self.OutputText.clear()
@@ -84,3 +79,7 @@ class NetworkScanningView(NetworkScanningUi):
             self.FilterError.setText("At least one filter should be checked to view some output...")
         else:
             self.FilterError.setText("")
+
+    # ------------ #
+    #    HELPERS   #
+    # ------------ #
