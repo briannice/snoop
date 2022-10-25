@@ -3,4 +3,5 @@ from .port_scanning_view import PortScanningView
 from .sniffing_view import SniffingView
 from .home_view import HomeView
 from .ns_lookup_view import NslookpView
+from .whois_view import WhoisView
 from .root_view import RootView
