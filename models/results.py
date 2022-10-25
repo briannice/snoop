@@ -2,7 +2,7 @@ from ipaddress import IPv4Address
 from typing import List
 from utils import format_key_value
 
-from .enums import HostState, PortState, PortScanMethod
+from .enums import HostState, PortState, PortScanMethod, HostScanMethod
 from .packets import ICMPPacket, TCPPacket
 
 
@@ -12,32 +12,42 @@ class HostScanResult():
         self,
         ip: IPv4Address,
         state: HostState,
+        method: HostScanMethod,
         icmp: ICMPPacket | None,
         tcp: TCPPacket | None
     ):
         self.ip = ip
         self.state = state
+        self.method = method
         self.icmp = icmp
         self.tcp = tcp
 
-    def __str__(self) -> str:
-        return f"{self.ip}: {self.state}"
+    def to_text_short(self):
+        return format_key_value(key=self.method, value=self.state, type="item")
 
-    def get_packet(self) -> ICMPPacket | TCPPacket | None:
-        if self.icmp:
-            return self.icmp
-        if self.tcp:
-            return self.tcp
-        return None
 
-    def is_up(self) -> bool:
-        return self.state == HostState.UP
+class HostScanConclusion():
 
-    def is_unknown(self) -> bool:
-        return self.state == HostState.UNKNOWN
+    def __init__(self, host: IPv4Address, results: List[PortScanMethod]):
+        self.host = host
+        self.results = results
+        self.state = self.get_global_state()
 
-    def is_blocked(self) -> bool:
-        return self.state == HostState.BLOCKED
+    def to_text_short(self) -> str:
+        result = ""
+        result += format_key_value(key=str(self.host), value=self.state, type="title")
+        for r in self.results:
+            result += r.to_text_short()
+        return result
+
+    def get_global_state(self):
+        for r in self.results:
+            if r.state.value == "UP":
+                return "UP"
+        for r in self.results:
+            if r.state.value == "BLOCKED":
+                return "BLOCKED"
+        return "UNKNOWN"
 
 
 class PortScanResult():

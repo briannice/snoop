@@ -37,6 +37,7 @@ class PortScanningView(PortScanningUi):
             return
 
         self.is_scanning = True
+        self.results = []
         self.clear_output()
         self.set_loading()
 
@@ -80,12 +81,12 @@ class PortScanningView(PortScanningUi):
     # --------------- #
 
     def validate(self) -> bool:
-        v1 = self.validate_select_host_text_input()
-        v2 = self.validate_select_port_text_input()
-        v3 = self.validate_select_packets()
+        v1 = self.validate_host_input()
+        v2 = self.validate_ports_input()
+        v3 = self.validate_packets()
         return v1 and v2 and v3
 
-    def validate_select_host_text_input(self) -> bool:
+    def validate_host_input(self) -> bool:
         ip = self.get_host_input()
         try:
             IPv4Address(ip)
@@ -96,7 +97,7 @@ class PortScanningView(PortScanningUi):
             self.set_host_error(error)
             return False
 
-    def validate_select_port_text_input(self) -> bool:
+    def validate_ports_input(self) -> bool:
         ports = self.get_ports_input()
         error = port_input_validator(ports)
 
@@ -107,7 +108,7 @@ class PortScanningView(PortScanningUi):
             self.set_ports_error(error)
             return False
 
-    def validate_select_packets(self) -> bool:
+    def validate_packets(self) -> bool:
         for _, value in self.get_packets_checkboxes().items():
             if value:
                 self.clear_packets_error()

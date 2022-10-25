@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 from models.results import PortScanConclusion
 from widgets.base import BaseGridLayoutWidget, BaseLabelWidget, BaseListWidget, BaseMessageBoxWidget, BasePushButtonWidget, BaseTabWidget
 from widgets.custom import CustomCheckBoxGroupWidget, CustomPortScanDialogWidget, CustomTextInputWidget

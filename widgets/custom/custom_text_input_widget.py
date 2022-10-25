@@ -19,7 +19,7 @@ class CustomTextInputWidget(BaseGridLayoutWidget):
 
         # Styling
         self.input.setFixedWidth(500)
-        self.label.setFixedWidth(50)
+        self.label.setFixedWidth(80)
 
     def set_error(self, error):
         self.error.setText(error)

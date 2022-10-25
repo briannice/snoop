@@ -5,9 +5,36 @@ class HostState(Enum):
     UP = "UP"
     BLOCKED = "BLOCKED"
     UNKNOWN = "UNKNOWN"
+    INTERNAL_ERROR = "INTERNAL ERROR"
 
     def __str__(self) -> str:
         return self.value
+
+
+class HostScanMethod(Enum):
+    PING = "PING"
+    SSH = "SSH"
+    HTTP = "HTTP"
+    HTTPS = "HTTPS"
+
+    def __str__(self) -> str:
+        return self.value
+
+    @staticmethod
+    def dict_to_list(dct):
+        result = []
+        for k, v in dct.items():
+            if v:
+                match k:
+                    case "ping":
+                        result.append(HostScanMethod.PING)
+                    case "ssh":
+                        result.append(HostScanMethod.SSH)
+                    case "http":
+                        result.append(HostScanMethod.HTTP)
+                    case "https":
+                        result.append(HostScanMethod.HTTPS)
+        return result
 
 
 class PortState(Enum):

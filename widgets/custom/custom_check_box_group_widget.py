@@ -47,3 +47,6 @@ class CustomCheckBoxGroupWidget(BaseGroupBoxWidget):
         for label, checkbox in zip(self.labels, self.checkboxes):
             values[label.text().lower()] = checkbox.isChecked()
         return values
+
+    def get_checkbox_widgets(self):
+        return self.checkboxes

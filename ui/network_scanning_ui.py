@@ -1,110 +1,100 @@
-from widgets import ButtonWidget, GroupWidget, LabelWidget, TabWidget, TextWidget
-from widgets.input import CheckboxInputWidget, TextInputWidget
-from widgets.layout import GLayoutWidget, HLayoutWidget, VLayoutWidget
+from typing import Dict
+from models.results import HostScanConclusion
+from widgets.base import BaseGridLayoutWidget, BaseLabelWidget, BaseListWidget, BaseMessageBoxWidget, BasePushButtonWidget, BaseTabWidget
+from widgets.custom import CustomCheckBoxGroupWidget, CustomPortScanDialogWidget, CustomTextInputWidget
 
 
-class NetworkScanningUi(TabWidget):
-
+class NetworkScanningUi(BaseTabWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Title
-        self.Title = LabelWidget("Network scanning", type="title")
+        # Widgets
+        self.title = BaseLabelWidget(type="title", text="Network scanning")
+        self.info = BaseLabelWidget(type="info")
+        self.network = CustomTextInputWidget("Network", "Example: 192.168.56.0/24")
+        self.protocols = CustomCheckBoxGroupWidget("Protocols", ["Ping", "SSH", "HTTP", "HTTPS"])
+        self.filter = CustomCheckBoxGroupWidget("Filter", ["UP", "BLOCKED", "UNKNOWN"])
+        self.output = BaseListWidget()
+        self.button_scan = BasePushButtonWidget("Start scan")
+        self.button_clear = BasePushButtonWidget("Clear output")
 
-        # Select network
-        self.SelectNetworkLabel = LabelWidget("Host", type="label")
-        self.SelectNetworkTextInput = TextInputWidget()
-        self.SelectNetworkError = LabelWidget("", type="error")
-        self.SelectNetworkInfo = LabelWidget("Example: 192.168.56.1", type="help")
+        # Layout
+        self.grid = BaseGridLayoutWidget(h_spacing="lg", v_spacing="lg")
+        self.grid.addWidget(self.title, 0, 0, 1, 1)
+        self.grid.addWidget(self.info, 0, 1, 1, 1)
+        self.grid.addLayout(self.network, 1, 0, 1, 2)
+        self.grid.addWidget(self.protocols, 2, 0, 1, 2)
+        self.grid.addWidget(self.filter, 3, 0, 1, 2)
+        self.grid.addWidget(self.output, 4, 0, 1, 2)
+        self.grid.addWidget(self.button_scan, 5, 0, 1, 1)
+        self.grid.addWidget(self.button_clear, 5, 1, 1, 1)
+        self.setLayout(self.grid)
 
-        self.SelectNetworkLayout = GLayoutWidget(h_spacing="sm", v_spacing="sm")
-        self.SelectNetworkLayout.addWidget(self.SelectNetworkLabel, 0, 0, 1, 1)
-        self.SelectNetworkLayout.addWidget(self.SelectNetworkTextInput, 0, 1, 1, 1)
-        self.SelectNetworkLayout.addWidget(self.SelectNetworkInfo, 0, 2, 1, 1)
+    def get_network_input(self) -> str:
+        return self.network.get_text()
 
-        # Select packets
-        self.SelectPacketsError = LabelWidget("", type="error")
+    def get_button_scan(self) -> BasePushButtonWidget:
+        return self.button_scan
 
-        self.SelectPacketsPingLabel = LabelWidget("Ping")
-        self.SelectPacketsSshLabel = LabelWidget("SSH")
-        self.SelectPacketsHttpLabel = LabelWidget("HTTP")
-        self.SelectPacketsHttpsLabel = LabelWidget("HTTPS")
+    def get_button_clear(self) -> BasePushButtonWidget:
+        return self.button_clear
 
-        self.SelectPacketsPingCheckbox = CheckboxInputWidget()
-        self.SelectPacketsSshCheckbox = CheckboxInputWidget()
-        self.SelectPacketsHttpCheckbox = CheckboxInputWidget()
-        self.SelectPacketsHttpsCheckbox = CheckboxInputWidget()
+    def get_protocols_checkboxes(self) -> Dict[str, bool]:
+        return self.protocols.get_checkbox_values()
 
-        self.SelectPacketsLayout = GLayoutWidget(v_spacing="sm")
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsPingLabel, 0, 0)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsSshLabel, 0, 1)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsHttpLabel, 0, 2)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsHttpsLabel, 0, 3)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsPingCheckbox, 1, 0)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsSshCheckbox, 1, 1)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsHttpCheckbox, 1, 2)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsHttpsCheckbox, 1, 3)
+    def get_filter_checkboxes(self) -> Dict[str, bool]:
+        return self.filter.get_checkbox_values()
 
-        self.SelectPacketsGroup = GroupWidget("Select protocols", self.SelectPacketsLayout)
+    def get_filter_checkbox_widgets(self):
+        return self.filter.get_checkbox_widgets()
 
-        # Filter
-        self.FilterError = LabelWidget("", type="error")
+    def get_output(self):
+        return self.output
 
-        self.FilterUpLabel = LabelWidget("UP")
-        self.FilterUnknownLabel = LabelWidget("UNKNOWN")
-        self.FilterBlockedLabel = LabelWidget("BLOCKED")
+    def set_loading(self):
+        self.info.set_info()
+        self.info.setText("Loading...")
 
-        self.FilterUpCheckbox = CheckboxInputWidget()
-        self.FilterUnknownCheckbox = CheckboxInputWidget()
-        self.FilterBlockedCheckbox = CheckboxInputWidget()
+    def set_success(self):
+        self.info.set_success()
+        self.info.setText("Scanning done!")
 
-        self.FilterLayout = GLayoutWidget(v_spacing="sm")
-        self.FilterLayout.addWidget(self.FilterUpLabel, 0, 0)
-        self.FilterLayout.addWidget(self.FilterUnknownLabel, 0, 1)
-        self.FilterLayout.addWidget(self.FilterBlockedLabel, 0, 2)
-        self.FilterLayout.addWidget(self.FilterUpCheckbox, 1, 0)
-        self.FilterLayout.addWidget(self.FilterUnknownCheckbox, 1, 1)
-        self.FilterLayout.addWidget(self.FilterBlockedCheckbox, 1, 2)
+    def set_error(self, error: str):
+        self.info.set_error()
+        self.info.setText(error)
 
-        self.FilterGroup = GroupWidget("Filter results", self.FilterLayout)
+    def set_network_error(self, error: str):
+        self.network.set_error(error)
 
-        # Result
-        self.OutputText = TextWidget()
+    def set_protocols_error(self, error: str):
+        self.protocols.set_error(error)
 
-        self.OutputLayout = VLayoutWidget()
-        self.OutputLayout.addWidget(self.OutputText)
+    def set_filter_error(self, error: str):
+        self.filter.set_error(error)
 
-        # Buttons
-        self.ButtonScan = ButtonWidget("Start scan")
-        self.ButtonClear = ButtonWidget("Clear output")
+    def clear_network_error(self):
+        self.network.remove_error()
 
-        self.ButtonsLayout = HLayoutWidget()
-        self.ButtonsLayout.addWidget(self.ButtonScan)
-        self.ButtonsLayout.addWidget(self.ButtonClear)
+    def clear_protocols_error(self):
+        self.protocols.remove_error()
 
-        # Self
-        self.Layout = VLayoutWidget()
-        self.Layout.addWidget(self.Title)
-        self.Layout.addLayout(self.SelectNetworkLayout)
-        self.Layout.addWidget(self.SelectPacketsGroup)
-        self.Layout.addWidget(self.FilterGroup)
-        self.Layout.addLayout(self.OutputLayout)
-        self.Layout.addLayout(self.ButtonsLayout)
+    def clear_filter_error(self):
+        self.filter.remove_error()
 
-        # Setup
-        self.setLayout(self.Layout)
+    def clear_errors(self):
+        self.clear_network_error()
+        self.clear_protocols_error()
+        self.clear_filter_error()
 
-    def get_packet_checkboxes(self):
-        return [
-            self.SelectPacketsPingCheckbox,
-            self.SelectPacketsSshCheckbox,
-            self.SelectPacketsHttpCheckbox,
-            self.SelectPacketsHttpsCheckbox
-        ]
+    def clear_output(self):
+        self.output.clear()
 
-    def get_filter_checkboxes(self):
-        return [
-            self.FilterUpCheckbox,
-            self.FilterUnknownCheckbox,
-            self.FilterBlockedCheckbox
-        ]
+    def add_output_item(self, host_scan_conclusion: HostScanConclusion):
+        filter = self.get_filter_checkboxes()
+        text = host_scan_conclusion.to_text_short()
+        if filter["up"] and host_scan_conclusion.state == "UP":
+            self.output.addItem(text)
+        elif filter["blocked"] and host_scan_conclusion.state == "BLOCKED":
+            self.output.addItem(text)
+        elif filter["unknown"] and host_scan_conclusion.state == "UNKNOWN":
+            self.output.addItem(text)

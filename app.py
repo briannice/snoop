@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
         root_view = RootView()
 
         self.setWindowTitle("Snoop - Network analyzer and hacking tool ©KDG")
-        self.setWindowIcon(QtGui.QIcon('./ui/static/snoop_logo_256x256.png'))
+        self.setWindowIcon(QtGui.QIcon('static/snoop_logo_256x256.png'))
         self.setContentsMargins(5, 5, 5, 5)
         self.setCentralWidget(root_view)
 
