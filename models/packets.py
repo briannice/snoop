@@ -1,5 +1,5 @@
 from models.utils import TCPFlags
-from scapy.layers.inet import ICMP, IP, TCP, UDP
+from scapy.all import ICMP, IP, TCP, UDP
 from typing import List
 from utils.formating import format_packet
 

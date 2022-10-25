@@ -1,7 +1,6 @@
 from models.packets import ICMPPacket, TCPPacket, UDPPacket
 from psutil import net_if_addrs
-from scapy.layers.inet import TCP, UDP, ICMP
-from scapy.all import sniff, Raw
+from scapy.all import sniff, TCP, UDP, ICMP
 from typing import Any
 
 
@@ -16,7 +15,7 @@ def get_interfaces():
 
 
 def sniff_packets(interface: str, prn: Any, filter: str | None):
-    sniff(iface=interface, prn=prn, store=0)
+    sniff(iface=interface, prn=prn, store=0, filter="ip")
 
 
 def format_packet(packet):

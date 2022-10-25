@@ -10,10 +10,9 @@ class NetworkScanningUi(BaseTabWidget):
 
         # Widgets
         self.title = BaseLabelWidget(type="title", text="Network scanning")
-        self.info = BaseLabelWidget(type="info")
+        self.info = BaseLabelWidget(type="info", align="r")
         self.network = CustomTextInputWidget("Network", "Example: 192.168.56.0/24")
         self.protocols = CustomCheckBoxGroupWidget("Protocols", ["Ping", "SSH", "HTTP", "HTTPS"])
-        # self.filter = CustomCheckBoxGroupWidget("Filter", ["UP", "BLOCKED", "UNKNOWN"])
         self.output = BaseListWidget()
         self.button_scan = BasePushButtonWidget("Start scan")
         self.button_clear = BasePushButtonWidget("Clear output")
@@ -24,7 +23,6 @@ class NetworkScanningUi(BaseTabWidget):
         self.grid.addWidget(self.info, 0, 1, 1, 1)
         self.grid.addLayout(self.network, 1, 0, 1, 2)
         self.grid.addWidget(self.protocols, 2, 0, 1, 2)
-        # self.grid.addWidget(self.filter, 3, 0, 1, 2)
         self.grid.addWidget(self.output, 4, 0, 1, 2)
         self.grid.addWidget(self.button_scan, 5, 0, 1, 1)
         self.grid.addWidget(self.button_clear, 5, 1, 1, 1)
@@ -41,12 +39,6 @@ class NetworkScanningUi(BaseTabWidget):
 
     def get_protocols_checkboxes(self) -> Dict[str, bool]:
         return self.protocols.get_checkbox_values()
-
-    # def get_filter_checkboxes(self) -> Dict[str, bool]:
-    #     return self.filter.get_checkbox_values()
-
-    # def get_filter_checkbox_widgets(self):
-    #     return self.filter.get_checkbox_widgets()
 
     def get_output(self):
         return self.output

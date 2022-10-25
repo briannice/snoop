@@ -25,9 +25,6 @@ class NetworkScanningView(NetworkScanningUi):
         self.get_button_clear().clicked.connect(self.handler_button_clear)
         self.get_output().clicked.connect(self.handler_message_box)
 
-        # for cb in self.get_filter_checkbox_widgets():
-        #     cb.clicked.connect(self.update_output_list)
-
     # ------------- #
     #    HANDLERS   #
     # ------------- #
@@ -84,7 +81,6 @@ class NetworkScanningView(NetworkScanningUi):
     def validate(self) -> bool:
         v1 = self.validate_network_input()
         v2 = self.validate_protocols()
-        # v3 = self.validate_filter()
         return v1 and v2
 
     def validate_network_input(self) -> bool:
@@ -105,14 +101,6 @@ class NetworkScanningView(NetworkScanningUi):
                 return True
         self.set_protocols_error("At least one protocol should be checked")
         return False
-
-    # def validate_filter(self) -> bool:
-    #     for _, value in self.get_filter_checkboxes().items():
-    #         if value:
-    #             self.clear_filter_error()
-    #             return True
-    #     self.set_filter_error("At least one filter should be checked")
-    #     return False
 
     # ------------ #
     #    HELPERS   #
