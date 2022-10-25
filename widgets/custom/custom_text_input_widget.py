@@ -7,8 +7,8 @@ class CustomTextInputWidget(BaseGridLayoutWidget):
         super().__init__(h_spacing="lg", v_spacing="sm")
 
         # Widgets
-        self.input = BaseLineEditWidget()
         self.label = BaseLabelWidget(type="label", text=name)
+        self.input = BaseLineEditWidget()
         self.help = BaseLabelWidget(type="help", text=help)
         self.error = BaseLabelWidget(type="error")
 

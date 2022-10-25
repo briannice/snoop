@@ -12,19 +12,10 @@ def ping_scan(ip: IPv4Address) -> HostScanResult:
         res = sr1(packet, timeout=2, verbose=0)
 
         if res is not None and res.haslayer(ICMP):
-            ip_src_ip = res.getlayer(IP).src
-            ip_dst_ip = res.getlayer(IP).dst
-            icmp_type = res.getlayer(ICMP).type
-            icmp_code = res.getlayer(ICMP).code
 
-            icmp_packet = ICMPPacket(
-                src_ip=ip_src_ip,
-                dst_ip=ip_dst_ip,
-                type=icmp_type,
-                code=icmp_code
-            )
+            icmp_packet = ICMPPacket(res)
 
-            if icmp_type == 0:
+            if icmp_packet.type == 0:
                 return HostScanResult(
                     ip=ip,
                     state=HostState.UP,
@@ -33,7 +24,7 @@ def ping_scan(ip: IPv4Address) -> HostScanResult:
                     tcp=None
                 )
 
-            if icmp_type == 3 and icmp_code in []:
+            if icmp_packet.type == 3:
                 return HostScanResult(
                     ip=ip,
                     state=HostState.BLOCKED,
@@ -49,6 +40,7 @@ def ping_scan(ip: IPv4Address) -> HostScanResult:
             icmp=None,
             tcp=None
         )
+
     except Exception as e:
         print(e)
         return HostScanResult(

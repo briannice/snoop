@@ -1,7 +1,7 @@
 from typing import Dict
 from models.results import PortScanConclusion
-from widgets.base import BaseGridLayoutWidget, BaseLabelWidget, BaseListWidget, BaseMessageBoxWidget, BasePushButtonWidget, BaseTabWidget
-from widgets.custom import CustomCheckBoxGroupWidget, CustomPortScanDialogWidget, CustomTextInputWidget
+from widgets.base import BaseGridLayoutWidget, BaseLabelWidget, BaseListWidget, BasePushButtonWidget, BaseTabWidget
+from widgets.custom import CustomCheckBoxGroupWidget, CustomContentDialogWidget, CustomTextInputWidget
 
 
 class PortScanningUi(BaseTabWidget):
@@ -11,7 +11,7 @@ class PortScanningUi(BaseTabWidget):
 
         # Widgets
         self.title = BaseLabelWidget(type="title", text="Port scanning")
-        self.info = BaseLabelWidget(type="info")
+        self.info = BaseLabelWidget(type="info", align="r")
         self.host = CustomTextInputWidget("Host", "Example: 192.168.56.1")
         self.ports = CustomTextInputWidget("Ports", "Using individual ports: 22,23,80\nUsing ranges: 22-24,80")
         self.packets = CustomCheckBoxGroupWidget("Packets", ["Stealth", "Connect", "Xmas", "FIN", "Null", "ACK"])
@@ -92,5 +92,10 @@ class PortScanningUi(BaseTabWidget):
         self.output.addItem(text)
 
     def set_message_box(self, port_scan_conclusion: PortScanConclusion):
-        dialog = CustomPortScanDialogWidget(port_scan_conclusion)
+        port = port_scan_conclusion.port
+        state = port_scan_conclusion.state
+
+        title = f"Port scan {port}: {state}"
+        content = port_scan_conclusion.to_text_extended()
+        dialog = CustomContentDialogWidget(title, content)
         dialog.exec()

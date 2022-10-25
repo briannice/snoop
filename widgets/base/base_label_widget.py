@@ -1,3 +1,4 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QLabel
 
@@ -6,12 +7,22 @@ from utils import SnoopException
 
 class BaseLabelWidget(QLabel):
 
-    def __init__(self, text: str = "", type: str = "label", *args, **kwargs):
+    def __init__(self, text: str = "", type: str = "label", align: str = "l", *args, **kwargs):
         super().__init__(text, *args, **kwargs)
 
         self.font = QFont()
         self.setType(type)
         self.setFont(self.font)
+        self.set_alignment(align)
+
+    def set_alignment(self, alignment: str):
+        match alignment:
+            case "l":
+                self.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            case "r":
+                self.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            case _:
+                raise SnoopException("Invalid alignment!")
 
     def setType(self, type):
         match type:

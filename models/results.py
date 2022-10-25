@@ -1,6 +1,6 @@
 from ipaddress import IPv4Address
 from typing import List
-from utils import format_key_value
+from utils.formating import format_key_value
 
 from .enums import HostState, PortState, PortScanMethod, HostScanMethod
 from .packets import ICMPPacket, TCPPacket
@@ -25,6 +25,19 @@ class HostScanResult():
     def to_text_short(self):
         return format_key_value(key=self.method, value=self.state, type="item")
 
+    def to_text_extended(self) -> str:
+        result = ""
+        result += format_key_value(key=self.method, value=self.state, type="group")
+        if self.icmp is not None:
+            result += self.icmp.to_text_extended()
+        elif self.tcp is not None:
+            result += self.tcp.to_text_extended()
+        elif self.state.value == "INTERNAL ERROR":
+            result += "INTERNAL ERROR\n"
+        else:
+            result += "NO RESPONSE\n"
+        return result
+
 
 class HostScanConclusion():
 
@@ -40,6 +53,13 @@ class HostScanConclusion():
             result += r.to_text_short()
         return result
 
+    def to_text_extended(self) -> str:
+        result = ""
+        for r in self.results:
+            result += r.to_text_extended()
+            result += "\n\n"
+        return result
+
     def get_global_state(self):
         for r in self.results:
             if r.state.value == "UP":
@@ -48,6 +68,11 @@ class HostScanConclusion():
             if r.state.value == "BLOCKED":
                 return "BLOCKED"
         return "UNKNOWN"
+
+    def is_important(self) -> bool:
+        if "UNKNOWN" in self.state:
+            return False
+        return True
 
 
 class PortScanResult():
@@ -103,6 +128,7 @@ class PortScanConclusion():
         result = ""
         for r in self.results:
             result += r.to_text_extended()
+            result += "\n\n"
         return result
 
     def get_global_state(self) -> List[str]:

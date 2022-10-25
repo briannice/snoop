@@ -15,7 +15,7 @@ class PortScanningView(PortScanningUi):
         super().__init__(*args, **kwargs)
 
         # Setup
-        self.thread_pool = QThreadPool()
+        self.thread_pool = QThreadPool.globalInstance()
 
         # Data
         self.results: List[PortScanConclusion] = []
@@ -45,7 +45,6 @@ class PortScanningView(PortScanningUi):
         ports = self.get_selected_ports()
         packets = self.get_packets_checkboxes()
 
-        # Start worker
         worker = PortScanningWorker(ip, ports, packets)
         worker.signals.data.connect(self.handler_signals_data)
         self.thread_pool.start(worker)

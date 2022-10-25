@@ -1,55 +1,93 @@
-from ipaddress import IPv4Address
 from models.utils import TCPFlags
-from utils import format_key, format_key_value
+from scapy.layers.inet import ICMP, IP, TCP, UDP
 from typing import List
+from utils.formating import format_packet
+
+
+class IPPacket():
+
+    def __init__(self, packet):
+        if packet.haslayer(IP):
+            ip = packet.getlayer(IP)
+            self.src = ip.src
+            self.dst = ip.dst
+        self.src = ""
+        self.dst = ""
+
+    def to_text_short(self):
+        return "[IP]"
+
+    def to_text_extended(self):
+        contents = {
+            "src": (self.src, 1),
+            "dst": (self.dst, 1),
+        }
+        return format_packet(contents, "IP")
 
 
 class ICMPPacket():
 
-    def __init__(
-        self,
-        src_ip: IPv4Address,
-        dst_ip: IPv4Address,
-        type: int,
-        code: int,
-    ):
-        self.type = type
-        self.code = code
-        self.src_ip = src_ip
-        self.dst_ip = dst_ip
+    def __init__(self, packet):
+        self.summary = packet.summary()
+
+        icmp = packet.getlayer(ICMP)
+        self.type = icmp.type
+        self.code = icmp.code
+
+        self.ip = IPPacket(packet)
+
+    def to_text_short(self):
+        return self.summary
 
     def to_text_extended(self):
-        result = ""
-        result += format_key(key="ICMP", type="title")
-        result += format_key_value(key="Src IP", value=str(self.src_ip), type="item")
-        result += format_key_value(key="Dst IP", value=str(self.dst_ip), type="item")
-        result += format_key_value(key="Type", value=str(self.type), type="item")
-        result += format_key_value(key="Code", value=str(self.code), type="item")
-        return result
+        contents = {
+            "type": (self.type, 1),
+            "code": (self.code, 1)
+        }
+        return format_packet(contents, "ICMP") + self.ip.to_text_extended()
 
 
 class TCPPacket():
 
-    def __init__(
-        self,
-        src_ip: IPv4Address,
-        dst_ip: IPv4Address,
-        src_port: int,
-        dst_port: int,
-        flags: List[str],
-    ):
-        self.src_ip = src_ip
-        self.dst_ip = dst_ip
-        self.src_port = src_port
-        self.dst_port = dst_port
-        self.flags = flags
+    def __init__(self, packet):
+        self.summary = packet.summary()
+
+        tcp = packet.getlayer(TCP)
+        self.sport = tcp.sport
+        self.dport = tcp.dport
+        self.flags = TCPFlags.to_list(tcp.flags)
+
+        self.ip = IPPacket(packet)
+
+    def to_text_short(self):
+        return self.summary
 
     def to_text_extended(self):
-        result = ""
-        result += format_key(key="TCP", type="title")
-        result += format_key_value(key="Src IP", value=str(self.src_ip), type="item")
-        result += format_key_value(key="Dst IP", value=str(self.dst_ip), type="item")
-        result += format_key_value(key="Src Port", value=self.src_port, type="item")
-        result += format_key_value(key="Dst Port", value=self.dst_port, type="item")
-        result += format_key_value(key="Type", value=TCPFlags.to_string(self.flags), type="item")
-        return result
+        contents = {
+            "flags": (TCPFlags.to_string(self.flags), 2),
+            "sport": (self.sport, 1),
+            "dport": (self.dport, 1)
+        }
+        return format_packet(contents, "TCP") + self.ip.to_text_extended()
+
+
+class UDPPacket():
+
+    def __init__(self, packet):
+        self.summary = packet.summary()
+
+        udp = packet.getlayer(UDP)
+        self.sport = udp.sport
+        self.dport = udp.dport
+
+        self.ip = IPPacket(packet)
+
+    def to_text_short(self):
+        return self.summary
+
+    def to_text_extended(self):
+        contents = {
+            "sport": (self.sport, 1),
+            "dport": (self.dport, 1)
+        }
+        return format_packet(contents, "UDP") + self.ip.to_text_extended()

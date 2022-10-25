@@ -1,5 +1,5 @@
+from PyQt5.QtCore import Qt
 from typing import Dict, List
-from utils import spacing
 
 from widgets.base import BaseCheckBoxWidget, BaseGridLayoutWidget, BaseGroupBoxWidget, BaseLabelWidget, BaseVBoxLayoutWidget
 
@@ -25,6 +25,13 @@ class CustomCheckBoxGroupWidget(BaseGroupBoxWidget):
             self.grid.addWidget(checkbox, 2, i)
         self.col.addLayout(self.grid)
         self.setLayout(self.col)
+
+        # Styling
+        self.grid.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        for label in self.labels:
+            label.setFixedWidth(100)
+        for checkbox in self.checkboxes:
+            checkbox.setFixedWidth(100)
 
     def set_error(self, error):
         self.error.setText(error)

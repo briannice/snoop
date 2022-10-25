@@ -14,7 +14,7 @@ class NetworkScanningView(NetworkScanningUi):
         super().__init__(*args, **kwargs)
 
         # Setup
-        self.thread_pool = QThreadPool()
+        self.thread_pool = QThreadPool.globalInstance()
 
         # Data
         self.results: List[HostScanConclusion] = []
@@ -23,9 +23,10 @@ class NetworkScanningView(NetworkScanningUi):
         # Handlers
         self.get_button_scan().clicked.connect(self.handler_button_scan)
         self.get_button_clear().clicked.connect(self.handler_button_clear)
+        self.get_output().clicked.connect(self.handler_message_box)
 
-        for cb in self.get_filter_checkbox_widgets():
-            cb.clicked.connect(self.update_output_list)
+        # for cb in self.get_filter_checkbox_widgets():
+        #     cb.clicked.connect(self.update_output_list)
 
     # ------------- #
     #    HANDLERS   #
@@ -60,6 +61,12 @@ class NetworkScanningView(NetworkScanningUi):
         self.set_success()
         self.update_output_list()
 
+    def handler_message_box(self, item):
+        important_results = [r for r in self.results if r.is_important()]
+        row = item.row()
+        port_scan_conclusion = important_results[row]
+        self.set_message_box(port_scan_conclusion)
+
     # ---------- #
     #    VIEW    #
     # ---------- #
@@ -67,7 +74,8 @@ class NetworkScanningView(NetworkScanningUi):
     def update_output_list(self):
         self.clear_output()
         for r in self.results:
-            self.add_output_item(r)
+            if r.is_important():
+                self.add_output_item(r)
 
     # --------------- #
     #    VALIDATORS   #
@@ -76,8 +84,8 @@ class NetworkScanningView(NetworkScanningUi):
     def validate(self) -> bool:
         v1 = self.validate_network_input()
         v2 = self.validate_protocols()
-        v3 = self.validate_filter()
-        return v1 and v2 and v3
+        # v3 = self.validate_filter()
+        return v1 and v2
 
     def validate_network_input(self) -> bool:
         network = self.get_network_input()
@@ -98,13 +106,13 @@ class NetworkScanningView(NetworkScanningUi):
         self.set_protocols_error("At least one protocol should be checked")
         return False
 
-    def validate_filter(self) -> bool:
-        for _, value in self.get_filter_checkboxes().items():
-            if value:
-                self.clear_filter_error()
-                return True
-        self.set_filter_error("At least one filter should be checked")
-        return False
+    # def validate_filter(self) -> bool:
+    #     for _, value in self.get_filter_checkboxes().items():
+    #         if value:
+    #             self.clear_filter_error()
+    #             return True
+    #     self.set_filter_error("At least one filter should be checked")
+    #     return False
 
     # ------------ #
     #    HELPERS   #
