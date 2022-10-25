@@ -4,7 +4,7 @@ def port_input_validator(text: str) -> str | None:
     min = 1
 
     if text == "":
-        return "Ports can not be empty"
+        return "Ports cannot be empty"
 
     for c in text:
         if c not in chars:
@@ -12,22 +12,22 @@ def port_input_validator(text: str) -> str | None:
 
     for t in text.split(","):
         if t == "":
-            "Port range can not be empty"
+            "Port range cannot be empty"
 
         if "," in t:
-            "Port range can not contain ','"
+            "Port range cannot contain ','"
 
         count = t.count("-")
         if count == 0:
             p = int(t)
             if p < min or p > max:
-                "Port range can not contain ','"
+                "Port range cannot contain ','"
         elif count == 1:
             ps = t.split("-")
             for p in ps:
                 p = int(p)
                 if p < min or p > max:
-                    "Port range can not contain ','"
+                    "Port range cannot contain ','"
         else:
             "Port range can only contain one '-'"
 

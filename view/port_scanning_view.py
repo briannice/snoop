@@ -22,34 +22,27 @@ class PortScanningView(PortScanningUi):
         self.is_scanning: bool = False
 
         # Handlers
-        self.ButtonScan.clicked.connect(self.handler_scan_button)
-        self.ButtonClear.clicked.connect(self.handler_clear_button)
+        self.get_button_scan().clicked.connect(self.handler_scan_button)
+        self.get_button_clear().clicked.connect(self.handler_clear_button)
+        self.get_output().clicked.connect(self.handler_message_box)
 
     # ------------- #
     #    HANDLERS   #
     # ------------- #
 
     def handler_scan_button(self):
-        # Dont scan if already scanning
         if self.is_scanning:
             return
-        self.is_scanning = True
-
-        # Validation
         if not self.validate():
             return
 
-        # Clear current output
-        self.OutputList.clear()
+        self.is_scanning = True
+        self.clear_output()
+        self.set_loading()
 
-        # Start scanning info
-        self.ScanningInfoLabel.setText("Scanning...")
-        self.ScanningInfoLabel.setType("info")
-
-        # Get data
-        ip = self.SelectHostTextInput.text()
+        ip = self.get_host_input()
         ports = self.get_selected_ports()
-        packets = self.get_packet_checkbox_statuses()
+        packets = self.get_packets_checkboxes()
 
         # Start worker
         worker = PortScanningWorker(ip, ports, packets)
@@ -58,14 +51,20 @@ class PortScanningView(PortScanningUi):
 
     def handler_clear_button(self):
         self.results = []
-        self.OutputList.clear()
+        self.clear_output()
+        self.clear_errors()
 
     def handler_signals_data(self, data: List[PortScanConclusion]):
-        self.ScanningInfoLabel.setText("Scanning done!")
-        self.ScanningInfoLabel.setType("success")
         self.is_scanning = False
         self.results = data
+        self.set_success()
         self.update_output_list()
+
+    def handler_message_box(self, item):
+        important_results = [r for r in self.results if r.is_important()]
+        row = item.row()
+        port_scan_conclusion = important_results[row]
+        self.set_message_box(port_scan_conclusion)
 
     # ---------- #
     #    VIEW    #
@@ -74,7 +73,7 @@ class PortScanningView(PortScanningUi):
     def update_output_list(self):
         for r in self.results:
             if r.is_important():
-                self.OutputList.addItem(str(r))
+                self.add_output_item(r)
 
     # --------------- #
     #    VALIDATORS   #
@@ -87,36 +86,33 @@ class PortScanningView(PortScanningUi):
         return v1 and v2 and v3
 
     def validate_select_host_text_input(self) -> bool:
-        ip = self.SelectHostTextInput.text()
+        ip = self.get_host_input()
         try:
             IPv4Address(ip)
-            self.SelectHostError.setText("")
-            self.SelectHostLayout.removeWidget(self.SelectHostError)
+            self.clear_host_error()
             return True
         except Exception as e:
-            self.SelectHostError.setText(str(e).replace("Address", "Host"))
-            self.SelectHostLayout.addWidget(self.SelectHostError, 1, 0, 1, 2)
+            error = str(e).replace("Address", "Host")
+            self.set_host_error(error)
             return False
 
     def validate_select_port_text_input(self) -> bool:
-        text = self.SelectPortTextInput.text()
-        error = port_input_validator(text)
+        ports = self.get_ports_input()
+        error = port_input_validator(ports)
 
         if error is None:
-            self.SelectPortError.setText("")
-            self.SelectHostLayout.removeWidget(self.SelectPortError)
+            self.clear_ports_error()
+            return True
         else:
-            self.SelectPortError.setText(error)
-            self.SelectHostLayout.addWidget(self.SelectPortError, 3, 0, 1, 2)
+            self.set_ports_error(error)
+            return False
 
     def validate_select_packets(self) -> bool:
-        for cb in self.get_packet_checkboxes():
-            if cb.isChecked():
-                self.SelectPacketsError.setText("")
-                self.SelectPacketsLayout.removeWidget(self.SelectPacketsError)
+        for _, value in self.get_packets_checkboxes().items():
+            if value:
+                self.clear_packets_error()
                 return True
-        self.SelectPacketsError.setText("At least one packet should be checked")
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsError, 2, 0, 1, 4)
+        self.set_packets_error("At least one packet should be checked")
         return False
 
     # ------------ #
@@ -125,7 +121,7 @@ class PortScanningView(PortScanningUi):
 
     def get_selected_ports(self) -> List[int]:
         result = []
-        text = self.SelectPortTextInput.text()
+        text = self.get_ports_input()
         for t in text.split(","):
             if "-" in t:
                 min = int(t.split("-")[0])

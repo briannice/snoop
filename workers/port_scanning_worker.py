@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor, wait
+from time import sleep
 from typing import List
 
 from PyQt5.QtCore import QRunnable, pyqtSlot
@@ -27,6 +28,7 @@ class PortScanningWorker(QRunnable):
             futures = []
             for port in self.ports:
                 for scan_method in self.scan_methods:
+                    sleep(0.1)
                     futures.append(executor.submit(
                         self.task,
                         self.ip,

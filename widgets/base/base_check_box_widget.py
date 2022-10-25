@@ -1,7 +1,7 @@
-from PyQt5 import QtCore
+from PyQt5.QtWidgets import QCheckBox
 
 
-class QRect(QtCore.QRect):
+class BaseCheckBoxWidget(QCheckBox):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

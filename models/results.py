@@ -1,5 +1,6 @@
 from ipaddress import IPv4Address
 from typing import List
+from utils import format_key_value
 
 from .enums import HostState, PortState, PortScanMethod
 from .packets import ICMPPacket, TCPPacket
@@ -57,8 +58,21 @@ class PortScanResult():
         self.icmp = icmp
         self.tcp = tcp
 
-    def __str__(self) -> str:
-        return f"{self.method: <10}   →   {self.state}"
+    def to_text_short(self) -> str:
+        return format_key_value(key=self.method, value=self.state, type="item")
+
+    def to_text_extended(self) -> str:
+        result = ""
+        result += format_key_value(key=self.method, value=self.state, type="group")
+        if self.icmp is not None:
+            result += self.icmp.to_text_extended()
+        elif self.tcp is not None:
+            result += self.tcp.to_text_extended()
+        elif self.state.value == "INTERNAL ERROR":
+            result += "INTERNAL ERROR\n"
+        else:
+            result += "NO RESPONSE\n"
+        return result
 
 
 class PortScanConclusion():
@@ -68,19 +82,17 @@ class PortScanConclusion():
         self.results = results
         self.state = self.get_global_state()
 
-    def __str__(self) -> str:
+    def to_text_short(self) -> str:
         result = ""
+        result += format_key_value(key=self.port, value=self.state, type="title")
+        for r in self.results:
+            result += r.to_text_short()
+        return result
 
-        result += f"{self.port: <12}   →   {self.state}\n"
-
-        l = len(result)
-        result += "-" * l + "\n"
-
-        for i in range(len(self.results)):
-            r = self.results[i]
-            result += f"★ {r}"
-            if i != len(self.results) - 1:
-                result += "\n"
+    def to_text_extended(self) -> str:
+        result = ""
+        for r in self.results:
+            result += r.to_text_extended()
         return result
 
     def get_global_state(self) -> List[str]:

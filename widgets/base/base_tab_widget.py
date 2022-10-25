@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget
 
 
-class TabWidget(QWidget):
+class BaseTabWidget(QWidget):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

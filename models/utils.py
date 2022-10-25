@@ -46,3 +46,10 @@ class TCPFlags():
         for f in flags:
             result.append(TCPFlags.SCAPY_FLAGS[f])
         return result
+
+    @staticmethod
+    def to_string(flags: List[str]) -> str:
+        result = ""
+        for f in flags:
+            result += f"{f} | "
+        return result[:len(result) - 2]
