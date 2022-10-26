@@ -15,7 +15,7 @@ def get_interfaces():
 
 
 def sniff_packets(interface: str, prn: Any, filter: str | None):
-    sniff(iface=interface, prn=prn, store=0, filter="ip")
+    sniff(iface=interface, prn=prn, store=0, filter=filter)
 
 
 def format_packet(packet):

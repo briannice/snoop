@@ -11,8 +11,9 @@ class IPPacket():
             ip = packet.getlayer(IP)
             self.src = ip.src
             self.dst = ip.dst
-        self.src = ""
-        self.dst = ""
+        else:
+            self.src = "unknown"
+            self.dst = "unknown"
 
     def to_text_short(self):
         return "[IP]"
@@ -25,42 +26,24 @@ class IPPacket():
         return format_packet(contents, "IP")
 
 
-class ICMPPacket():
-
-    def __init__(self, packet):
-        self.summary = packet.summary()
-
-        icmp = packet.getlayer(ICMP)
-        self.type = icmp.type
-        self.code = icmp.code
-
-        self.ip = IPPacket(packet)
-
-    def to_text_short(self):
-        return self.summary
-
-    def to_text_extended(self):
-        contents = {
-            "type": (self.type, 1),
-            "code": (self.code, 1)
-        }
-        return format_packet(contents, "ICMP") + self.ip.to_text_extended()
-
-
 class TCPPacket():
 
     def __init__(self, packet):
-        self.summary = packet.summary()
 
-        tcp = packet.getlayer(TCP)
-        self.sport = tcp.sport
-        self.dport = tcp.dport
-        self.flags = TCPFlags.to_list(tcp.flags)
+        if packet.haslayer(TCP):
+            tcp = packet.getlayer(TCP)
+            self.sport = tcp.sport
+            self.dport = tcp.dport
+            self.flags = TCPFlags.to_list(tcp.flags)
+        else:
+            self.sport = "unknown"
+            self.dport = "unknown"
+            self.flags = "unknown"
 
         self.ip = IPPacket(packet)
 
     def to_text_short(self):
-        return self.summary
+        return "[TCP]"
 
     def to_text_extended(self):
         contents = {
@@ -74,16 +57,19 @@ class TCPPacket():
 class UDPPacket():
 
     def __init__(self, packet):
-        self.summary = packet.summary()
 
-        udp = packet.getlayer(UDP)
-        self.sport = udp.sport
-        self.dport = udp.dport
+        if packet.haslayer(UDP):
+            udp = packet.getlayer(UDP)
+            self.sport = udp.sport
+            self.dport = udp.dport
+        else:
+            self.type = "unknown"
+            self.code = "unknown"
 
         self.ip = IPPacket(packet)
 
     def to_text_short(self):
-        return self.summary
+        return "[UDP]"
 
     def to_text_extended(self):
         contents = {
@@ -91,3 +77,28 @@ class UDPPacket():
             "dport": (self.dport, 1)
         }
         return format_packet(contents, "UDP") + self.ip.to_text_extended()
+
+
+class ICMPPacket():
+
+    def __init__(self, packet):
+
+        if packet.haslayer(ICMP):
+            icmp = packet.getlayer(ICMP)
+            self.type = icmp.type
+            self.code = icmp.code
+        else:
+            self.type = "unknown"
+            self.code = "unknown"
+
+        self.ip = IPPacket(packet)
+
+    def to_text_short(self):
+        return "[ICMP]"
+
+    def to_text_extended(self):
+        contents = {
+            "type": (self.type, 1),
+            "code": (self.code, 1)
+        }
+        return format_packet(contents, "ICMP") + self.ip.to_text_extended()
