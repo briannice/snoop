@@ -1,7 +1,10 @@
 from ipaddress import IPv4Address
 from scapy.all import ICMP, IP, sr1, TCP
 
-from .utils import ICMPPacket, PortScanMethod, PortScanResult, PortState, TCPFlags, TCPPacket
+from models.enums import PortScanMethod, PortState
+from models.results import PortScanResult
+from models.utils import TCPFlags
+from models.packets import TCPPacket, ICMPPacket
 
 
 def ack_scan(ip: IPv4Address, port: int) -> PortScanResult:
@@ -11,24 +14,9 @@ def ack_scan(ip: IPv4Address, port: int) -> PortScanResult:
         res = sr1(packet, timeout=2, verbose=0)
 
         if res is not None:
-            src_ip = res.getlayer(IP).src
-            dst_ip = res.getlayer(IP).dst
-
             if res.haslayer(TCP):
-                flags = res.getlayer(TCP).flags
-                flags = TCPFlags.to_list(flags)
-                dst_port = res.getlayer(TCP).dport
-                src_port = res.getlayer(TCP).sport
-
-                tcp_packet = TCPPacket(
-                    dst_ip=dst_ip,
-                    src_ip=src_ip,
-                    dst_port=dst_port,
-                    flags=flags,
-                    src_port=src_port,
-                )
-
-                if "RST" in flags:
+                tcp_packet = TCPPacket(res)
+                if "RST" in tcp_packet.flags:
                     return PortScanResult(
                         ip=ip,
                         port=port,
@@ -37,18 +25,8 @@ def ack_scan(ip: IPv4Address, port: int) -> PortScanResult:
                         icmp=None,
                         tcp=tcp_packet
                     )
-
             if res.haslayer(ICMP):
-                type = res.getlayer(ICMP).type
-                code = res.getlayer(ICMP).code
-
-                icmp_packet = ICMPPacket(
-                    code=code,
-                    dst_ip=dst_ip,
-                    src_ip=src_ip,
-                    type=type
-                )
-
+                icmp_packet = ICMPPacket(res)
                 return PortScanResult(
                     ip=ip,
                     port=port,
@@ -57,7 +35,6 @@ def ack_scan(ip: IPv4Address, port: int) -> PortScanResult:
                     icmp=icmp_packet,
                     tcp=None
                 )
-
         return PortScanResult(
             ip=ip,
             port=port,

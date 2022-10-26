@@ -1,7 +1,7 @@
-from PyQt5.QtWidgets import QSizePolicy
+from PyQt5.QtWidgets import QComboBox
 
 
-class SizePolicyWidget(QSizePolicy):
+class BaseComboBoxWidget(QComboBox):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

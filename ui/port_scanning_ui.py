@@ -1,118 +1,101 @@
-from widgets import ButtonWidget, GroupWidget, LabelWidget, ListWidget, TabWidget, TextWidget
-from widgets.input import CheckboxInputWidget, TextInputWidget
-from widgets.layout import GLayoutWidget, HLayoutWidget, VLayoutWidget
+from typing import Dict
+from models.results import PortScanConclusion
+from widgets.base import BaseGridLayoutWidget, BaseLabelWidget, BaseListWidget, BasePushButtonWidget, BaseTabWidget
+from widgets.custom import CustomCheckBoxGroupWidget, CustomContentDialogWidget, CustomTextInputWidget
 
 
-class PortScanningUi(TabWidget):
+class PortScanningUi(BaseTabWidget):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Title
-        self.Title = LabelWidget("Port scanning", type="title")
+        # Widgets
+        self.title = BaseLabelWidget(type="title", text="Port scanning")
+        self.info = BaseLabelWidget(type="info", align="r")
+        self.host = CustomTextInputWidget("Host", "Example: 192.168.56.1")
+        self.ports = CustomTextInputWidget("Ports", "Using individual ports: 22,23,80\nUsing ranges: 22-24,80")
+        self.packets = CustomCheckBoxGroupWidget("Packets", ["Stealth", "Connect", "Xmas", "FIN", "Null", "ACK"])
+        self.output = BaseListWidget()
+        self.button_scan = BasePushButtonWidget("Start scan")
+        self.button_clear = BasePushButtonWidget("Clear output")
 
-        # Select host and ports
-        self.SelectHostLabel = LabelWidget("Host", type="label")
-        self.SelectHostTextInput = TextInputWidget()
-        self.SelectHostError = LabelWidget("", type="error")
-        self.SelectHostInfo = LabelWidget("Example: 192.168.56.1", type="help")
+        # Layout
+        self.grid = BaseGridLayoutWidget(h_spacing="lg", v_spacing="lg")
+        self.grid.addWidget(self.title, 0, 0, 1, 1)
+        self.grid.addWidget(self.info, 0, 1, 1, 1)
+        self.grid.addLayout(self.host, 1, 0, 1, 2)
+        self.grid.addLayout(self.ports, 2, 0, 1, 2)
+        self.grid.addWidget(self.packets, 3, 0, 1, 2)
+        self.grid.addWidget(self.output, 4, 0, 1, 2)
+        self.grid.addWidget(self.button_scan, 5, 0, 1, 1)
+        self.grid.addWidget(self.button_clear, 5, 1, 1, 1)
+        self.setLayout(self.grid)
 
-        self.SelectPortLabel = LabelWidget("Ports", type="label")
-        self.SelectPortTextInput = TextInputWidget()
-        self.SelectPortError = LabelWidget("", type="error")
-        self.SelectPortInfo = LabelWidget("Using individual ports: 22,23,80\nUsing ranges: 22-24,80", type="help")
+    def get_host_input(self) -> str:
+        return self.host.get_text()
 
-        self.SelectHostLayout = GLayoutWidget(h_spacing="sm", v_spacing="sm")
+    def get_ports_input(self) -> str:
+        return self.ports.get_text()
 
-        self.SelectHostLayout.addWidget(self.SelectHostLabel, 0, 0, 1, 1)
-        self.SelectHostLayout.addWidget(self.SelectHostTextInput, 0, 1, 1, 1)
-        self.SelectHostLayout.addWidget(self.SelectHostInfo, 0, 2, 1, 1)
+    def get_button_scan(self) -> BasePushButtonWidget:
+        return self.button_scan
 
-        self.SelectHostLayout.addWidget(self.SelectPortLabel, 2, 0, 1, 1)
-        self.SelectHostLayout.addWidget(self.SelectPortTextInput, 2, 1, 1, 1)
-        self.SelectHostLayout.addWidget(self.SelectPortInfo, 2, 2, 1, 1)
+    def get_button_clear(self) -> BasePushButtonWidget:
+        return self.button_clear
 
-        # Select Packets
-        self.SelectPacketsError = LabelWidget("", type="error")
+    def get_packets_checkboxes(self) -> Dict[str, bool]:
+        return self.packets.get_checkbox_values()
 
-        self.SelectPacketsStealthLabel = LabelWidget("Stealth")
-        self.SelectPacketsConnectLabel = LabelWidget("Connect")
-        self.SelectPacketsXmasLabel = LabelWidget("Xmas")
-        self.SelectPacketsFinLabel = LabelWidget("FIN")
-        self.SelectPacketsNullLabel = LabelWidget("NULL")
-        self.SelectPacketsAckLabel = LabelWidget("ACK")
+    def get_output(self):
+        return self.output
 
-        self.SelectPacketsStealthCheckbox = CheckboxInputWidget()
-        self.SelectPacketsConnectCheckbox = CheckboxInputWidget()
-        self.SelectPacketsXmasCheckbox = CheckboxInputWidget()
-        self.SelectPacketsFinCheckbox = CheckboxInputWidget()
-        self.SelectPacketsNullCheckbox = CheckboxInputWidget()
-        self.SelectPacketsAckCheckbox = CheckboxInputWidget()
+    def set_loading(self):
+        self.info.set_info()
+        self.info.setText("Loading...")
 
-        self.SelectPacketsLayout = GLayoutWidget(v_spacing="sm")
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsStealthLabel, 0, 0)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsConnectLabel, 0, 1)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsXmasLabel, 0, 2)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsFinLabel, 0, 3)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsNullLabel, 0, 4)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsAckLabel, 0, 5)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsStealthCheckbox, 1, 0)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsConnectCheckbox, 1, 1)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsXmasCheckbox, 1, 2)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsFinCheckbox, 1, 3)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsNullCheckbox, 1, 4)
-        self.SelectPacketsLayout.addWidget(self.SelectPacketsAckCheckbox, 1, 5)
+    def set_success(self):
+        self.info.set_success()
+        self.info.setText("Scanning done!")
 
-        self.SelectPacketsGroup = GroupWidget()
-        self.SelectPacketsGroup.setLayout(self.SelectPacketsLayout)
+    def set_error(self, error: str):
+        self.info.set_error()
+        self.info.setText(error)
 
-        # Scanning info
-        self.ScanningInfoLabel = LabelWidget("", type="info")
+    def set_host_error(self, error: str):
+        self.host.set_error(error)
 
-        self.ScanningInfoLayout = VLayoutWidget()
-        self.ScanningInfoLayout.addWidget(self.ScanningInfoLabel)
+    def set_ports_error(self, error: str):
+        self.ports.set_error(error)
 
-        # Output
-        self.OutputList = ListWidget()
+    def set_packets_error(self, error: str):
+        self.packets.set_error(error)
 
-        self.OutputTextLayout = VLayoutWidget()
-        self.OutputTextLayout.addWidget(self.OutputList)
+    def clear_host_error(self):
+        self.host.remove_error()
 
-        # Buttons
-        self.ButtonScan = ButtonWidget("Start scan")
-        self.ButtonClear = ButtonWidget("Clear output")
+    def clear_ports_error(self):
+        self.ports.remove_error()
 
-        self.ButtonsLayout = HLayoutWidget()
-        self.ButtonsLayout.addWidget(self.ButtonScan)
-        self.ButtonsLayout.addWidget(self.ButtonClear)
+    def clear_packets_error(self):
+        self.packets.remove_error()
 
-        # Self
-        self.Layout = VLayoutWidget()
-        self.Layout.addWidget(self.Title)
-        self.Layout.addLayout(self.SelectHostLayout)
-        self.Layout.addWidget(self.SelectPacketsGroup)
-        self.Layout.addLayout(self.ScanningInfoLayout)
-        self.Layout.addLayout(self.OutputTextLayout)
-        self.Layout.addLayout(self.ButtonsLayout)
+    def clear_errors(self):
+        self.clear_host_error()
+        self.clear_ports_error()
+        self.clear_packets_error()
 
-        self.setLayout(self.Layout)
+    def clear_output(self):
+        self.output.clear()
 
-    def get_packet_checkboxes(self):
-        return [
-            self.SelectPacketsConnectCheckbox,
-            self.SelectPacketsStealthCheckbox,
-            self.SelectPacketsFinCheckbox,
-            self.SelectPacketsXmasCheckbox,
-            self.SelectPacketsAckCheckbox,
-            self.SelectPacketsNullCheckbox,
-        ]
+    def add_output_item(self, port_scan_conclusion: PortScanConclusion):
+        text = port_scan_conclusion.to_text_short()
+        self.output.addItem(text)
 
-    def get_packet_checkbox_statuses(self):
-        return {
-            "ack": self.SelectPacketsAckCheckbox.isChecked(),
-            "connect": self.SelectPacketsConnectCheckbox.isChecked(),
-            "stealth": self.SelectPacketsStealthCheckbox.isChecked(),
-            "fin": self.SelectPacketsFinCheckbox.isChecked(),
-            "xmas": self.SelectPacketsXmasCheckbox.isChecked(),
-            "null": self.SelectPacketsNullCheckbox.isChecked(),
-        }
+    def set_message_box(self, port_scan_conclusion: PortScanConclusion):
+        port = port_scan_conclusion.port
+        state = port_scan_conclusion.state
+
+        title = f"Port scan {port}: {state}"
+        content = port_scan_conclusion.to_text_extended()
+        dialog = CustomContentDialogWidget(title, content)
+        dialog.exec()

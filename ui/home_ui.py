@@ -1,15 +1,14 @@
 from PyQt5 import Qt
-from widgets import TabWidget
+from widgets.base import BaseTabWidget
 
 
-class HomeUI(TabWidget):
+class HomeUI(BaseTabWidget):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setAttribute(Qt.Qt.WA_StyledBackground, True)
-        stylesheet = """
-                 background-image: url("ui/static/snoop.png");
-                background-repeat: no-repeat; 
-                background-position: center;
-        """
-        self.setStyleSheet(stylesheet)
+        self.setStyleSheet("""
+            background-image: url("static/snoop.png");
+            background-repeat: no-repeat; 
+            background-position: center;
+        """)

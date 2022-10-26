@@ -6,6 +6,6 @@ def get_ui_spacing(size: str) -> int:
         case "sm":
             return 10
         case "lg":
-            return 25
+            return 15
         case _:
             raise SnoopException("Invalid size for ui spacing!")

@@ -1,2 +1,2 @@
 from .port_scan import port_scan
-from .utils import HostScanResult, HostState, ICMPPacket, PortScanConclusion, PortScanMethod, PortScanResult, PortState, TCPPacket
+from .network_scan import network_scan

@@ -1,15 +1,26 @@
 from concurrent.futures import ThreadPoolExecutor, wait
-from typing import List
+from ipaddress import IPv4Address
+from time import sleep
+from typing import Dict, List
 
 from PyQt5.QtCore import QRunnable, pyqtSlot
 
-from lib.scanning import port_scan, PortScanMethod, PortScanResult, PortScanConclusion
+from models.enums import PortScanMethod
+from models.results import PortScanResult, PortScanConclusion
+from lib.scanning import port_scan
 from signals import PortScanningSignal
 
 
 class PortScanningWorker(QRunnable):
 
-    def __init__(self, ip, ports, packets, *args, **kwargs):
+    def __init__(
+        self,
+        ip: IPv4Address,
+        ports: List[int],
+        packets: Dict[str, bool],
+        *args,
+        **kwargs
+    ):
         super().__init__(*args, **kwargs)
 
         self.signals = PortScanningSignal()
@@ -25,6 +36,7 @@ class PortScanningWorker(QRunnable):
             futures = []
             for port in self.ports:
                 for scan_method in self.scan_methods:
+                    sleep(0.1)
                     futures.append(executor.submit(
                         self.task,
                         self.ip,
@@ -43,6 +55,6 @@ class PortScanningWorker(QRunnable):
             self.signals.data.emit(data)
 
     @staticmethod
-    def task(host, port, scan_method, result):
+    def task(host: IPv4Address, port: int, scan_method: PortScanMethod, result: List[PortScanResult]):
         r = port_scan(host, port, scan_method)
         result.append(r)

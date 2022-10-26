@@ -5,10 +5,10 @@ from .connect_scan import connect_scan
 from .fin_scan import fin_scan
 from .null_scan import null_scan
 from .stealth_scan import stealth_scan
-from .utils import PortScanMethod
 from .xmas_scan import xmas_scan
 
 from utils import SnoopException
+from models.enums import PortScanMethod
 
 
 def port_scan(ip: IPv4Address, port: int, method: PortScanMethod):
