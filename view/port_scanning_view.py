@@ -22,15 +22,15 @@ class PortScanningView(PortScanningUi):
         self.is_scanning: bool = False
 
         # Handlers
-        self.get_button_scan().clicked.connect(self.handler_scan_button)
-        self.get_button_clear().clicked.connect(self.handler_clear_button)
+        self.get_button_scan().clicked.connect(self.handler_button_scan)
+        self.get_button_clear().clicked.connect(self.handler_button_clear)
         self.get_output().clicked.connect(self.handler_message_box)
 
     # ------------- #
     #    HANDLERS   #
     # ------------- #
 
-    def handler_scan_button(self):
+    def handler_button_scan(self):
         if self.is_scanning:
             return
         if not self.validate():
@@ -43,13 +43,13 @@ class PortScanningView(PortScanningUi):
 
         ip = self.get_host_input()
         ports = self.get_selected_ports()
-        packets = self.get_packets_checkboxes()
+        packets = self.get_packets()
 
         worker = PortScanningWorker(ip, ports, packets)
         worker.signals.data.connect(self.handler_signals_data)
         self.thread_pool.start(worker)
 
-    def handler_clear_button(self):
+    def handler_button_clear(self):
         self.results = []
         self.clear_output()
         self.clear_errors()
@@ -108,7 +108,7 @@ class PortScanningView(PortScanningUi):
             return False
 
     def validate_packets(self) -> bool:
-        for _, value in self.get_packets_checkboxes().items():
+        for _, value in self.get_packets().items():
             if value:
                 self.clear_packets_error()
                 return True

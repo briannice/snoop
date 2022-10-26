@@ -11,7 +11,7 @@ class SniffingView(SniffingUI):
 
         # Thread pool
         self.thread_pool = QThreadPool.globalInstance()
-        self.worker = None
+        self.signals = None
 
         # Data
         self.count = 0
@@ -54,13 +54,13 @@ class SniffingView(SniffingUI):
         worker = SniffingWorker(interface, protocol)
         worker.signals.packet.connect(self.handler_signals_packet)
         self.thread_pool.start(worker)
-        self.worker = worker
+        self.signals = worker.signals
 
     def handler_button_stop(self):
         if not self.is_sniffing:
             return
         self.is_sniffing = False
-        self.worker.signals.stop.emit(True)
+        self.signals.stop.emit(True)
 
     def handler_button_clear(self):
         self.set_count(0)

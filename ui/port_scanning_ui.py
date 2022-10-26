@@ -43,7 +43,7 @@ class PortScanningUi(BaseTabWidget):
     def get_button_clear(self) -> BasePushButtonWidget:
         return self.button_clear
 
-    def get_packets_checkboxes(self) -> Dict[str, bool]:
+    def get_packets(self) -> Dict[str, bool]:
         return self.packets.get_checkbox_values()
 
     def get_output(self):

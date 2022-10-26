@@ -32,3 +32,11 @@ def port_input_validator(text: str) -> str | None:
             "Port range can only contain one '-'"
 
     return None
+
+
+def domain_name_validator(domain: str) -> str | None:
+    if len(domain) < 2:
+        return "Domain must be at least 2 characters"
+    if len(domain) > 63:
+        return "Domain cannot be more than 63 characters"
+    return None

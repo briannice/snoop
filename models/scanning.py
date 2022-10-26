@@ -1,7 +1,30 @@
 from models.utils import TCPFlags
-from scapy.all import ICMP, IP, TCP, UDP
+from scapy.layers.inet import ICMP, IP, TCP, UDP
+from scapy.layers.l2 import Ether
 from typing import List
-from utils.formating import format_packet
+from utils.formating import format_grid
+
+
+class EthPacket():
+
+    def __init__(self, packet):
+        if packet.haslayer(Ether):
+            ether = packet.getlayer(Ether)
+            self.src = ether.src
+            self.dst = ether.dst
+        else:
+            self.src = ""
+            self.dst = ""
+
+    def to_text_short(self):
+        return "[Eth]"
+
+    def to_text_extended(self):
+        contents = {
+            "src": (self.src, 1),
+            "dst": (self.dst, 1),
+        }
+        return format_grid(contents, "Eth")
 
 
 class IPPacket():
@@ -15,6 +38,8 @@ class IPPacket():
             self.src = "unknown"
             self.dst = "unknown"
 
+        self.eth = EthPacket(packet)
+
     def to_text_short(self):
         return "[IP]"
 
@@ -23,7 +48,7 @@ class IPPacket():
             "src": (self.src, 1),
             "dst": (self.dst, 1),
         }
-        return format_packet(contents, "IP")
+        return format_grid(contents, "IP") + self.eth.to_text_extended()
 
 
 class TCPPacket():
@@ -51,7 +76,7 @@ class TCPPacket():
             "sport": (self.sport, 1),
             "dport": (self.dport, 1)
         }
-        return format_packet(contents, "TCP") + self.ip.to_text_extended()
+        return format_grid(contents, "TCP") + self.ip.to_text_extended()
 
 
 class UDPPacket():
@@ -76,7 +101,7 @@ class UDPPacket():
             "sport": (self.sport, 1),
             "dport": (self.dport, 1)
         }
-        return format_packet(contents, "UDP") + self.ip.to_text_extended()
+        return format_grid(contents, "UDP") + self.ip.to_text_extended()
 
 
 class ICMPPacket():
@@ -101,4 +126,4 @@ class ICMPPacket():
             "type": (self.type, 1),
             "code": (self.code, 1)
         }
-        return format_packet(contents, "ICMP") + self.ip.to_text_extended()
+        return format_grid(contents, "ICMP") + self.ip.to_text_extended()

@@ -3,7 +3,7 @@ from typing import List
 from utils.formating import format_key_value
 
 from .enums import HostState, PortState, PortScanMethod, HostScanMethod
-from .packets import ICMPPacket, TCPPacket
+from .scanning import ICMPPacket, TCPPacket
 
 
 class HostScanResult():
@@ -23,11 +23,11 @@ class HostScanResult():
         self.tcp = tcp
 
     def to_text_short(self):
-        return format_key_value(key=self.method, value=self.state, type="item")
+        return format_key_value(key=self.method, value=self.state, list=True)
 
     def to_text_extended(self) -> str:
         result = ""
-        result += format_key_value(key=self.method, value=self.state, type="group")
+        result += format_key_value(key=self.method, value=self.state, sep="=", nl=True)
         if self.icmp is not None:
             result += self.icmp.to_text_extended()
         elif self.tcp is not None:
@@ -48,7 +48,7 @@ class HostScanConclusion():
 
     def to_text_short(self) -> str:
         result = ""
-        result += format_key_value(key=str(self.host), value=self.state, type="title")
+        result += format_key_value(key=str(self.host), value=self.state, sep="-")
         for r in self.results:
             result += r.to_text_short()
         return result
@@ -94,11 +94,11 @@ class PortScanResult():
         self.tcp = tcp
 
     def to_text_short(self) -> str:
-        return format_key_value(key=self.method, value=self.state, type="item")
+        return format_key_value(key=self.method, value=self.state, list=True)
 
     def to_text_extended(self) -> str:
         result = ""
-        result += format_key_value(key=self.method, value=self.state, type="group")
+        result += format_key_value(key=self.method, value=self.state, sep="=", nl=True)
         if self.icmp is not None:
             result += self.icmp.to_text_extended()
         elif self.tcp is not None:
@@ -119,7 +119,7 @@ class PortScanConclusion():
 
     def to_text_short(self) -> str:
         result = ""
-        result += format_key_value(key=self.port, value=self.state, type="title")
+        result += format_key_value(key=self.port, value=self.state, sep="-")
         for r in self.results:
             result += r.to_text_short()
         return result

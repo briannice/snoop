@@ -4,7 +4,7 @@ from scapy.all import ICMP, IP, send, sr1, TCP
 from models.enums import PortScanMethod, PortState, HostState, HostScanMethod
 from models.results import PortScanResult, HostScanResult
 from models.utils import TCPFlags
-from models.packets import TCPPacket, ICMPPacket
+from models.scanning import TCPPacket, ICMPPacket
 
 
 def stealth_scan(ip: IPv4Address, port: int) -> PortScanResult:
