@@ -14,7 +14,7 @@ def get_interfaces():
     return list(adr.keys())
 
 
-def sniff_packets(interface: str, prn: Any, filter: str | None):
+def sniff_packets(interface: str, prn: Any, filter: str = "ip"):
     sniff(iface=interface, prn=prn, store=0, filter=filter)
 
 

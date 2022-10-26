@@ -20,7 +20,7 @@ class SniffingWorker(QRunnable):
     def run(self):
         match self.protocol:
             case "All":
-                sniff_packets(self.interface, self.handle_packet, None)
+                sniff_packets(self.interface, self.handle_packet)
             case "TCP":
                 sniff_packets(self.interface, self.handle_packet, "tcp")
             case "UDP":
