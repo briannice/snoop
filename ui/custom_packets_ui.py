@@ -63,7 +63,7 @@ class CustomPacketsUI(BaseTabWidget):
             return self.source.get_int()
         return None
 
-    def get_icmp_type(self) -> str:
+    def get_icmp_code(self) -> str:
         if not self.show_port:
             return self.destination.get_int()
         return None
@@ -82,7 +82,7 @@ class CustomPacketsUI(BaseTabWidget):
 
     def set_waiting(self):
         self.info.set_info()
-        self.info.setText("Waiting for respoonse...")
+        self.info.setText("Waiting for response...")
 
     def set_no_response(self):
         self.info.set_error()
@@ -110,11 +110,11 @@ class CustomPacketsUI(BaseTabWidget):
 
     def update_protocol(self, protocol):
         if protocol in ["ICMP"]:
-            self.show_port = True
+            self.show_port = False
             self.source.set_label_int("ICMP Type")
             self.destination.set_label_int("ICMP Code")
         elif protocol in ["TCP", "UDP"]:
-            self.show_port = False
+            self.show_port = True
             self.source.set_label_int("Source Port")
             self.destination.set_label_int("Destination Port")
 

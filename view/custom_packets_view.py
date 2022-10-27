@@ -49,8 +49,8 @@ class CustomPacketsView(CustomPacketsUI):
         destiantion_ip = self.get_destination_address()
         source_port = self.get_source_port()
         destination_port = self.get_destination_port()
-        icmp_type = None
-        icmp_code = None
+        icmp_type = self.get_icmp_type()
+        icmp_code = self.get_icmp_code()
         payload = self.get_payload()
 
         worker = CustomPacketsWorker(
