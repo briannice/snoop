@@ -1,4 +1,4 @@
-from .create_packets_worker import CreatePacketsWorker
+from .custom_packets_worker import CustomPacketsWorker
 from .network_scanning_worker import NetworkScanningWorker
 from .ns_lookup_worker import NsLookupWorker
 from .port_scanning_worker import PortScanningWorker

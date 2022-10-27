@@ -1,1 +1,1 @@
-from .custom_packets import SendUDP, SendTCP, SendICMP
+from .custom_packets import send_icmp, send_tcp, send_udp

@@ -15,12 +15,12 @@ def ns_lookup_records(domain: str, records: Dict[str, bool]):
 
 
 def ns_lookup_record(domain: str, search_type: str):
-    search_type = rdatatype.from_text(search_type)
-    qdomain = name.from_text(domain)
-    q = message.make_query(qdomain, search_type)
-    # todo: maybe add to choose DNS server instead of 8.8.8.8?
-    r = query.udp(q, "8.8.8.8")
     try:
+        search_type = rdatatype.from_text(search_type)
+        qdomain = name.from_text(domain)
+        q = message.make_query(qdomain, search_type)
+        # todo: maybe add to choose DNS server instead of 8.8.8.8?
+        r = query.udp(q, "8.8.8.8")
         ns_rrset = r.find_rrset(r.answer, qdomain, rdataclass.IN, search_type)
         return ns_rrset
     except:
