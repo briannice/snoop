@@ -82,7 +82,7 @@ class CustomPacketsUI(BaseTabWidget):
 
     def set_waiting(self):
         self.info.set_info()
-        self.info.setText("Waiting for respoonse...")
+        self.info.setText("Waiting for response...")
 
     def set_no_response(self):
         self.info.set_error()

@@ -2,6 +2,7 @@ from lib.sniffing import get_interfaces
 from PyQt5.QtCore import QThreadPool
 from workers import SniffingWorker
 from ui import SniffingUI
+from models.scanning import ICMPPacket
 
 
 class SniffingView(SniffingUI):
@@ -69,6 +70,14 @@ class SniffingView(SniffingUI):
 
     def handler_signals_packet(self, packet):
         self.count += 1
+
+        # Check for ICMP --> Do not put in buffer
+        if isinstance(packet, ICMPPacket):
+            self.add_packet(packet)
+            self.set_count(self.count)
+            self.packets.append(packet)
+            return
+
         if len(self.buffer) < self.max_buffer:
             self.buffer.append(packet)
         else:
