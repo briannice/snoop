@@ -3,7 +3,7 @@ from typing import List
 from utils.formating import format_key_value
 
 from .enums import HostState, PortState, PortScanMethod, HostScanMethod
-from .scanning import ICMPPacket, TCPPacket
+from .packets import ICMPPacket, TCPPacket
 
 
 class HostScanResult():

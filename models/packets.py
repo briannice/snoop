@@ -12,9 +12,11 @@ class EthPacket():
             ether = packet.getlayer(Ether)
             self.src = ether.src
             self.dst = ether.dst
+            self.type = ether.type
         else:
-            self.src = ""
-            self.dst = ""
+            self.src = "unknown"
+            self.dst = "unknown"
+            self.type = "unknown"
 
     def to_text_short(self):
         return "[Eth]"
@@ -23,6 +25,7 @@ class EthPacket():
         contents = {
             "src": (self.src, 1),
             "dst": (self.dst, 1),
+            "type": (self.type, 1),
         }
         return format_grid(contents, "Eth")
 
@@ -34,9 +37,13 @@ class IPPacket():
             ip = packet.getlayer(IP)
             self.src = ip.src
             self.dst = ip.dst
+            self.ttl = ip.ttl
+            self.id = ip.id
         else:
             self.src = "unknown"
             self.dst = "unknown"
+            self.ttl = "unknown"
+            self.id = "unknown"
 
         self.eth = EthPacket(packet)
 
@@ -47,6 +54,8 @@ class IPPacket():
         contents = {
             "src": (self.src, 1),
             "dst": (self.dst, 1),
+            "ttl": (self.ttl, 1),
+            "id": (self.id, 1),
         }
         return format_grid(contents, "IP") + self.eth.to_text_extended()
 
@@ -112,9 +121,15 @@ class ICMPPacket():
             icmp = packet.getlayer(ICMP)
             self.type = icmp.type
             self.code = icmp.code
+            self.chksum = icmp.chksum
+            self.id = icmp.id
+            self.seq = icmp.seq
         else:
             self.type = "unknown"
             self.code = "unknown"
+            self.chksum = "unknown"
+            self.id = "unknown"
+            self.seq = "unknown"
 
         self.ip = IPPacket(packet)
 
@@ -124,6 +139,9 @@ class ICMPPacket():
     def to_text_extended(self):
         contents = {
             "type": (self.type, 1),
-            "code": (self.code, 1)
+            "code": (self.code, 1),
+            "chksum": (self.chksum, 1),
+            "id": (self.id, 1),
+            "seq": (self.seq, 1),
         }
         return format_grid(contents, "ICMP") + self.ip.to_text_extended()

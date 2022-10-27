@@ -1,4 +1,4 @@
-from models.scanning import ICMPPacket, TCPPacket, UDPPacket
+from models.packets import ICMPPacket, TCPPacket, UDPPacket
 from psutil import net_if_addrs
 from scapy.all import sniff, TCP, UDP, ICMP
 from typing import Any
