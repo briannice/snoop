@@ -1,14 +1,51 @@
 from scapy.layers.inet import IP, ICMP, TCP, UDP
 from scapy.sendrecv import sr1
+from models.scanning import ICMPPacket, TCPPacket, UDPPacket
 
 
-def send_icmp(source: str, destination: str, type: int, code: int,  interface: str, payload: str):
-    return sr1(IP(src=source, dst=destination, ttl=128) / ICMP(type=type, code=code) / payload, iface=interface, timeout=1, verbose=0)
+def send_icmp(
+    source: str,
+    destination: str,
+    type: str,
+    code: int,
+    interface: str,
+    payload: str
+):
+    packet = IP(src=source, dst=destination) / ICMP(type=int(type), code=int(code)) / payload
+    res = sr1(packet, iface=interface, timeout=2, verbose=0)
+    if res is None:
+        return None
+    else:
+        return ICMPPacket(packet)
 
 
-def send_tcp(source: str, destination: str, sport: int, dport: int, interface: str, payload: str):
-    return sr1(IP(src=source, dst=destination) / TCP(dport=dport, sport=sport) / payload, iface=interface, timeout=1, verbose=0)
+def send_tcp(
+    source: str,
+    destination: str,
+    sport: int,
+    dport: int,
+    interface: str,
+    payload: str
+):
+    packet = IP(src=source, dst=destination) / TCP(dport=int(dport), sport=int(sport)) / payload
+    res = sr1(packet, iface=interface, timeout=2, verbose=0)
+    if res is None:
+        return None
+    else:
+        return TCPPacket(packet)
 
 
-def send_udp(source: str, destination: str, sport: int, dport: int, interface: str, payload: str):
-    return sr1(IP(src=source, dst=destination) / UDP(sport=sport, dport=dport) / payload, iface=interface, timeout=1, verbose=0)
+def send_udp(
+    source: str,
+    destination: str,
+    sport: int,
+    dport: int,
+    interface: str,
+    payload: str
+):
+    packet = IP(src=source, dst=destination) / UDP(sport=int(sport), dport=int(dport)) / payload
+    res = sr1(packet, iface=interface, timeout=2, verbose=0)
+    if res is None:
+        return None
+    else:
+        return UDPPacket(packet)

@@ -13,10 +13,10 @@ class CustomPacketsWorker(QRunnable):
         source_ip: str,
         dest_ip: str,
         payload: str,
-        source_port: int | None,
-        dest_port: int | None,
-        icmp_type: int | None,
-        icmp_code: int | None,
+        source_port: str | None,
+        dest_port: str | None,
+        icmp_type: str | None,
+        icmp_code: str | None,
         * args,
         **kwargs
     ):
