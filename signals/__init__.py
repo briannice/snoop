@@ -1,4 +1,4 @@
-from .create_packets_signal import CreatePacketSignal
+from .custom_packets_signal import CustomPacketSignal
 from .network_scanning_signal import NetworkScanningSignal
 from .ns_lookup_signal import NsLookupSignal
 from .port_scanning_signal import PortScanningSignal
