@@ -66,10 +66,10 @@ def format_grid(contents: Dict[str, str], info: str):
         result += f"{key: <6}"
         result += " → "
         if col == 1:
-            result += f"{value: <25}"
+            result += f"{value: <32}"
             count += 1
         if col == 2:
-            result += f"{value: <50}"
+            result += f"{value: <64}"
             count += 2
         if count % 2 == 0:
             result += "\n"

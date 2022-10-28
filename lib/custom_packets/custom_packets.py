@@ -1,6 +1,6 @@
 from scapy.layers.inet import IP, ICMP, TCP, UDP
 from scapy.sendrecv import sr1
-from models.scanning import ICMPPacket, TCPPacket, UDPPacket
+from models.packets import ICMPPacket, TCPPacket, UDPPacket
 
 
 def send_icmp(

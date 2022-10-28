@@ -3,7 +3,7 @@ from typing import List
 from utils.formating import format_key_value
 
 from .enums import HostState, PortState, PortScanMethod, HostScanMethod
-from .scanning import ICMPPacket, TCPPacket
+from .packets import ICMPPacket, TCPPacket
 
 
 class HostScanResult():
@@ -132,30 +132,13 @@ class PortScanConclusion():
         return result
 
     def get_global_state(self) -> List[str]:
-        result = set(["OPEN", "CLOSED", "FILTERED"])
         for r in self.results:
-            match r.state.value:
-                case "OPEN":
-                    return "OPEN"
-                case "CLOSED":
-                    return "CLOSED"
-                case "UNFILTERED":
-                    result = result.intersection(["OPEN", "CLOSED"])
-                case "OPEN | FILTERED":
-                    result = result.intersection(["OPEN", "FILTERED"])
-                case "CLOSED | FILTERED":
-                    result = result.intersection(["CLOSED", "FILTERED"])
-
-        if len(result) == 3:
-            result = set(["FILTERED"])
-
-        result_str = ""
-        for r in result:
-            result_str += r
-            result_str += " | "
-        if len(result_str) > 0:
-            result_str = result_str[:len(result_str) - 2]
-        return result_str
+            if r.state.value == "OPEN":
+                return "OPEN"
+        for r in self.results:
+            if r.state.value == "CLOSED":
+                return "CLOSED"
+        return "FILTERED"
 
     def is_important(self):
         if "FILTERED" in self.state:

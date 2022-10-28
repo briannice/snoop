@@ -2,7 +2,7 @@ from lib.sniffing import get_interfaces
 from PyQt5.QtCore import QThreadPool
 from workers import SniffingWorker
 from ui import SniffingUI
-from models.scanning import ICMPPacket
+from models.packets import ICMPPacket
 
 
 class SniffingView(SniffingUI):

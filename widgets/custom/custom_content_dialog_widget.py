@@ -18,6 +18,6 @@ class CustomContentDialogWidget(BaseDialogWidget):
         self.setLayout(self.col)
 
         # Styling
-        self.setMinimumSize(600, 500)
+        self.setMinimumSize(800, 600)
         self.content.setText(content)
         self.setWindowTitle(title)
