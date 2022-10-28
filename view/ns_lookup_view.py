@@ -1,80 +1,86 @@
-from datetime import timedelta
-
 import dns.rdatatype
 import dns.rrset
 
-from lib.domainresearch import lookupRecord
-from ui import NslookupUi
+from PyQt5.QtCore import QThreadPool
+
+from ui import NsLookupUi
+from models.ns_lookup import NsLookupResult
+from utils.validators import domain_name_validator
+from workers import NsLookupWorker
 
 
-def _seconds_to_readable_format(sec: int):
-    td_str = str(timedelta(seconds=sec))
-    x = td_str.split(':')
-    return x[0] + ' Hours ' + x[1] + ' Minutes ' + x[2] + ' Seconds'
-
-
-class NslookpView(NslookupUi):
+class NsLookupView(NsLookupUi):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        # Setup
+        self.thead_pool = QThreadPool.globalInstance()
+
+        # Data
+        self.is_looking: bool = False
+        self.result: str | None = None
+
         # Handlers
-        self.CheckAllButton.clicked.connect(self.handle_check_all_checkboxes)
-        self.UncheckAllButton.clicked.connect(self.handle_uncheck_all_checkboxes)
-        self.DomainButton.clicked.connect(self.handle_search_domain)
+        self.get_button_lookup().clicked.connect(self.handler_button_lookup)
+        self.get_button_clear().clicked.connect(self.handler_button_clear)
 
-    def handle_check_all_checkboxes(self):
-        for checkbox in range(len(self.Checkboxes)):
-            self.Checkboxes[checkbox].setChecked(True)
+    # ------------- #
+    #    HANDLERS   #
+    # ------------- #
 
-    def handle_uncheck_all_checkboxes(self):
-        for checkbox in range(len(self.Checkboxes)):
-            self.Checkboxes[checkbox].setChecked(False)
+    def handler_button_lookup(self):
+        if self.is_looking:
+            return
+        if not self.validate():
+            return
 
-    def handle_search_domain(self):
-        domain = self.DomainEdit.text()
-        self.Result.clear()
+        self.is_looking = True
+        self.result = None
+        self.clear_output()
+        self.set_loading()
 
-        for checkbox in range(len(self.Checkboxes)):
-            if self.Checkboxes[checkbox].isChecked():
-                rdataCheckbox = dns.rdatatype.from_text(self.Checkboxes[checkbox].text())
-                self._handle_result_search_domain(lookupRecord(domain, rdataCheckbox), rdataCheckbox)
+        domain = self.get_domain()
+        records = self.get_records()
 
-    def _handle_result_search_domain(self, result: dns.rrset, typeData: dns.rdatatype):
-        if result is not None:
-            for re in result:
-                if typeData == dns.rdatatype.MX:
-                    # todo: add option to show preference value anyway if multiple mail servers?
-                    self.Result.append(dns.rdatatype.to_text(typeData) + ": " + str(re.exchange))
+        worker = NsLookupWorker(domain, records)
+        worker.signals.data.connect(self.handler_signal_data)
+        self.thead_pool.start(worker)
 
-                    # Search on IP adresses related to MX
-                    self._sub_search(str(re.exchange))
-                elif typeData == dns.rdatatype.SOA:
-                    self.Result.append(dns.rdatatype.to_text(typeData) + ": ")
-                    self._format_soa_record(re)
-                else:
-                    self.Result.append(dns.rdatatype.to_text(typeData) + ": " + str(re))
+    def handler_button_clear(self):
+        self.result = None
+        self.clear_output()
+        self.clear_errors()
 
-                    # Same as with MX, but on top of it for NS
-                    if typeData == dns.rdatatype.NS:
-                        self._sub_search(str(re))
-        else:
-            self.Result.append(dns.rdatatype.to_text(typeData) + ": " + "No records found")
+    def handler_signal_data(self, data: NsLookupResult):
+        text = data.to_text_extended()
 
-    def _sub_search(self, domain: str):
-        dnsTypes = [dns.rdatatype.A, dns.rdatatype.AAAA]
+        self.is_looking = False
+        self.result = text
+        self.set_success()
+        self.set_output(text)
 
-        for dnsType in range(len(dnsTypes)):
-            q = lookupRecord(domain, dnsTypes[dnsType])
-            if q is not None:
-                for result in q:
-                    self.Result.append("\t" + dns.rdatatype.to_text(result.rdtype) + ": " + str(result))
+    # --------------- #
+    #    VALIDATORS   #
+    # --------------- #
 
-    def _format_soa_record(self, soa: dns.rdatatype.SOA):
-        self.Result.append("  primary name server: " + str(soa.mname))
-        self._sub_search(str(soa.mname))
-        self.Result.append("  responsible mail address: " + str(soa.rname))
-        self.Result.append("  serial: " + str(soa.serial))  # moet zo blijven want is geen tijd
-        self.Result.append("  refresh: " + _seconds_to_readable_format(soa.refresh))
-        self.Result.append("  retry: " + _seconds_to_readable_format(soa.retry))
-        self.Result.append("  expire: " + _seconds_to_readable_format(soa.expire))
-        self.Result.append("  default TTL: " + _seconds_to_readable_format(soa.minimum))
+    def validate(self) -> bool:
+        v1 = self.validate_domain()
+        v2 = self.validate_records()
+        return v1 and v2
+
+    def validate_domain(self) -> bool:
+        domain = self.get_domain()
+        error = domain_name_validator(domain)
+        if error is None:
+            self.clear_domain_error()
+            return True
+        self.set_domain_error(error)
+        return False
+
+    def validate_records(self) -> bool:
+        for _, value in self.get_records().items():
+            if value:
+                self.clear_records_error()
+                return True
+        self.set_records_error("At least one record should be selected")
+        return False

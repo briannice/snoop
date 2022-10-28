@@ -1,1 +1,1 @@
-from .sniffing import getInterfaces, sniffAllPackets, sniff_only_tcp_packets, sniff_only_udp_packets
+from .sniffing import get_interfaces, sniff_packets, format_packet

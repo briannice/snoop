@@ -1,20 +1,27 @@
-import psutil
-from scapy.all import *
+from models.packets import ICMPPacket, TCPPacket, UDPPacket
+from psutil import net_if_addrs
+from scapy.all import sniff, TCP, UDP, ICMP
+from typing import Any
 
 
-# Get every interface from host
-def getInterfaces():
-    adr = psutil.net_if_addrs()
+def get_interfaces():
+    adr = net_if_addrs()
+
+    # Sniffing Pseudo Loopback interfaces in Windows can cause crashes
+    loopback = 'Loopback Pseudo-Interface 1'
+    if loopback in adr.keys():
+        adr.pop(loopback)
     return list(adr.keys())
 
 
-def sniffAllPackets(interface, prn):
-    sniff(iface=interface, prn=prn, store=0)
+def sniff_packets(interface: str, prn: Any, filter: str = "ip"):
+    sniff(iface=interface, prn=prn, store=0, filter=filter)
 
 
-def sniff_only_tcp_packets(interface, prn):
-    sniff(iface=interface, prn=prn, store=0, filter="tcp")
-
-
-def sniff_only_udp_packets(interface, prn):
-    sniff(iface=interface, prn=prn, store=0, filter="udp")
+def format_packet(packet):
+    if packet.haslayer(ICMP):
+        return ICMPPacket(packet)
+    if packet.haslayer(TCP):
+        return TCPPacket(packet)
+    if packet.haslayer(UDP):
+        return UDPPacket(packet)

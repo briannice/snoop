@@ -1,75 +1,77 @@
-from widgets import ButtonWidget, LabelWidget, TabWidget, RadioButtonWidget, ListWidget, QRect, QSize
-from widgets.input import ComboBoxWidget
-from widgets.layout import GLayoutWidget
-from widgets.GUI import Font
+from typing import List
+from widgets.base import BaseGridLayoutWidget, BaseLabelWidget, BaseListWidget, BaseRadioButtonWidget, BasePushButtonWidget, BaseTabWidget
+from widgets.custom import CustomComboBoxWidget, CustomRadioButtonGroupWidget, CustomContentDialogWidget
 
 
-class SniffingUI(TabWidget):
+class SniffingUI(BaseTabWidget):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Data
-        self.count_packets = 0
-        self.itemBuffer = []
-        self.maxItems = 5
-
-        # Init widget
-        self.setObjectName("Form")
-        self.resize(1000, 800)
-        self.setMinimumSize(QSize(1000, 800))
-
         # Widgets
-        self.label_choose_interface = LabelWidget(self)
-        self.label_choose_interface.setGeometry(QRect(50, 80, 141, 16))
-        self.label_choose_interface.setText("Choose your interface:")
+        self.title = BaseLabelWidget(type="title", text="Sniffing")
+        self.info = BaseLabelWidget(type="info", align="r")
+        self.interface = CustomComboBoxWidget("Interface", "Interace on which you want to sniff packets")
+        self.protocols = CustomRadioButtonGroupWidget("Protocols", ["TCP", "UDP", "ICMP", "All"])
+        self.output = BaseListWidget()
+        self.button_sniff = BasePushButtonWidget("Start sniffing")
+        self.button_stop = BasePushButtonWidget("Stop sniffing")
+        self.button_clear = BasePushButtonWidget("Clear output")
 
-        self.comboBox_interfaces = ComboBoxWidget(self)
-        self.comboBox_interfaces.setGeometry(QRect(50, 100, 901, 22))
+        # Layout
+        self.grid = BaseGridLayoutWidget(h_spacing="lg", v_spacing="lg")
+        self.grid.addWidget(self.title, 0, 0, 1, 3)
+        self.grid.addWidget(self.info, 0, 3, 1, 3)
+        self.grid.addLayout(self.interface, 1, 0, 1, 6)
+        self.grid.addWidget(self.protocols, 2, 0, 1, 6)
+        self.grid.addWidget(self.output, 3, 0, 1, 6)
+        self.grid.addWidget(self.button_sniff, 4, 0, 1, 2)
+        self.grid.addWidget(self.button_stop, 4, 2, 1, 2)
+        self.grid.addWidget(self.button_clear, 4, 4, 1, 2)
+        self.setLayout(self.grid)
 
-        self.label_choose_protocol = LabelWidget(self)
-        self.label_choose_protocol.setGeometry(QRect(50, 140, 181, 16))
-        self.label_choose_protocol.setText("Choose your desired protocol:")
+    def get_interface(self) -> str:
+        return self.interface.get_text()
 
-        self.radioButton_TCP = RadioButtonWidget(self)
-        self.radioButton_TCP.setGeometry(QRect(50, 170, 51, 20))
-        self.radioButton_TCP.setText("TCP")
-        self.radioButton_UDP = RadioButtonWidget(self)
-        self.radioButton_UDP.setGeometry(QRect(110, 170, 51, 20))
-        self.radioButton_UDP.setText("UDP")
-        self.radioButton_both = RadioButtonWidget(self)
-        self.radioButton_both.setGeometry(QRect(170, 170, 51, 20))
-        self.radioButton_both.setText("Both")
-        self.radioButton_both.setChecked(True)
+    def get_protocol(self) -> str:
+        return self.protocols.get_value()
 
-        self.listWidget = ListWidget(self)
-        self.listWidget.setGeometry(QRect(50, 230, 901, 481))
-        self.label_title = LabelWidget(self)
-        self.label_title.setGeometry(QRect(50, 40, 411, 16))
+    def get_protocol_buttons(self) -> List[BaseRadioButtonWidget]:
+        return self.protocols.get_radio_buttons()
 
-        font = Font()
-        font.setPointSize(11)
-        self.label_title.setFont(font)
-        self.label_title.setText("Network sniffer: sniff packets")
+    def get_output(self):
+        return self.output
 
-        self.pushButton_start_sniffing = ButtonWidget(self)
-        self.pushButton_start_sniffing.setGeometry(QRect(50, 720, 281, 31))
-        self.pushButton_start_sniffing.setText("Start sniffing")
-        self.pushButton_stop_sniffing = ButtonWidget(self)
-        self.pushButton_stop_sniffing.setGeometry(QRect(350, 720, 281, 31))
-        self.pushButton_stop_sniffing.setText("Stop sniffing")
-        self.pushButton_clear_screen = ButtonWidget(self)
-        self.pushButton_clear_screen.setGeometry(QRect(800, 720, 151, 31))
-        self.pushButton_clear_screen.setText("Clean output")
+    def get_button_sniff(self) -> BasePushButtonWidget:
+        return self.button_sniff
 
-        self.label_status = LabelWidget(self)
-        self.label_status.setGeometry(QRect(50, 210, 181, 16))
-        self.label_status.setText("Status: stopped")
-        self.label_status.setStyleSheet('QLabel#label_status {color: red}')
-        self.label_count = LabelWidget(self)
-        self.label_count.setGeometry(QRect(150, 210, 141, 16))
+    def get_button_stop(self) -> BasePushButtonWidget:
+        return self.button_stop
 
-        # Setup
-        self.Label = LabelWidget("Scanning")
-        self.Layout = GLayoutWidget()
-        self.setLayout(self.Layout)
+    def get_button_clear(self) -> BasePushButtonWidget:
+        return self.button_clear
+
+    def add_interface(self, interface: str):
+        self.interface.add_item(interface)
+
+    def add_packet(self, packet):
+        text = packet.to_text_short()
+        self.output.addItem(text)
+        self.output.scrollToBottom()
+
+    def set_count(self, count):
+        self.info.set_info()
+        self.info.setText(f"Count: {count}")
+
+    def set_stop(self):
+        self.info.set_error()
+        self.info.setText("Stopped sniffing")
+
+    def clear_output(self):
+        self.output.clear()
+
+    def set_message_box(self, packet):
+        title = "Packet view"
+        content = packet.to_text_extended()
+        dialog = CustomContentDialogWidget(title, content)
+        dialog.exec()

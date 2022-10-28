@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QTabWidget
 
-from view import NetworkScanningView, PortScanningView, SniffingView, HomeView, NslookpView, WhoisView
+from view import HomeView, NetworkScanningView, NsLookupView, PortScanningView, SniffingView, CustomPacketsView, WhoisView
 
 
 class RootView(QTabWidget):
@@ -11,8 +11,14 @@ class RootView(QTabWidget):
         # Home
         home_view = HomeView()
 
+        # Custom Packets Tab
+        custom_packets = CustomPacketsView()
+
         # Network scanning tab
         network_scanning_view = NetworkScanningView()
+
+        # Nslookup view
+        ns_lookup_view = NsLookupView()
 
         # Port scanning tab
         port_scanning_view = PortScanningView()
@@ -20,16 +26,14 @@ class RootView(QTabWidget):
         # Sniffing tab
         sniffing_view = SniffingView()
 
-        # Nslookup tab
-        nslookup_view = NslookpView()
-
         # Whois tab
         whois_view = WhoisView()
 
         # Setup
         self.addTab(home_view, "Home")
+        self.addTab(custom_packets, "Custom packets")
         self.addTab(network_scanning_view, "Network scanning")
+        self.addTab(ns_lookup_view, "NS lookup")
         self.addTab(port_scanning_view, "Port scanning")
-        self.addTab(sniffing_view, "Sniffing")
-        self.addTab(nslookup_view, "Nslookup")
-        self.addTab(whois_view, "Whois")
+        self.addTab(sniffing_view, "Sniff packets")
+        self.addTab(whois_view, "Whois lookup")
