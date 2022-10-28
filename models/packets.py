@@ -14,9 +14,9 @@ class EthPacket():
             self.dst = ether.dst
             self.type = ether.type
         else:
-            self.src = "unknown"
-            self.dst = "unknown"
-            self.type = "unknown"
+            self.src = ""
+            self.dst = ""
+            self.type = ""
 
     def to_text_short(self):
         return "[Eth]"
@@ -40,10 +40,10 @@ class IPPacket():
             self.ttl = ip.ttl
             self.id = ip.id
         else:
-            self.src = "unknown"
-            self.dst = "unknown"
-            self.ttl = "unknown"
-            self.id = "unknown"
+            self.src = ""
+            self.dst = ""
+            self.ttl = ""
+            self.id = ""
 
         self.eth = EthPacket(packet)
 
@@ -70,9 +70,9 @@ class TCPPacket():
             self.dport = tcp.dport
             self.flags = TCPFlags.to_list(tcp.flags)
         else:
-            self.sport = "unknown"
-            self.dport = "unknown"
-            self.flags = "unknown"
+            self.sport = ""
+            self.dport = ""
+            self.flags = ""
 
         self.ip = IPPacket(packet)
 
@@ -97,8 +97,8 @@ class UDPPacket():
             self.sport = udp.sport
             self.dport = udp.dport
         else:
-            self.type = "unknown"
-            self.code = "unknown"
+            self.type = ""
+            self.code = ""
 
         self.ip = IPPacket(packet)
 
@@ -125,11 +125,11 @@ class ICMPPacket():
             self.id = icmp.id
             self.seq = icmp.seq
         else:
-            self.type = "unknown"
-            self.code = "unknown"
-            self.chksum = "unknown"
-            self.id = "unknown"
-            self.seq = "unknown"
+            self.type = ""
+            self.code = ""
+            self.chksum = ""
+            self.id = ""
+            self.seq = ""
 
         self.ip = IPPacket(packet)
 
