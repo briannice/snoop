@@ -1,4 +1,47 @@
-def port_input_validator(text: str) -> str | None:
+
+def port_validator(text: str) -> str | None:
+    if text == "":
+        return "Port can not be empty"
+    try:
+        text = str(text)
+    except:
+        return "Port must be a number"
+    if text < 0:
+        return "Port must be a positive number"
+    if text > 65535:
+        return "Port must be less than 255"
+    return None
+
+
+def icmp_type_validator(text: str) -> str | None:
+    if text == "":
+        return "ICMP type can not be empty"
+    try:
+        text = str(text)
+    except:
+        return "ICMP type must be a number"
+    if text < 0:
+        return "ICMP type must be a positive number"
+    if text > 65535:
+        return "ICMP type must be less than 255"
+    return None
+
+
+def icmp_code_validator(text: str) -> str | None:
+    if text == "":
+        return "ICMP code can not be empty"
+    try:
+        text = str(text)
+    except:
+        return "ICMP code must be a number"
+    if text < 0:
+        return "ICMP code must be a positive number"
+    if text > 65535:
+        return "ICMP code must be less than 65535"
+    return None
+
+
+def port_range_validator(text: str) -> str | None:
     chars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", ","]
     max = 65535
     min = 1

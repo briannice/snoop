@@ -77,6 +77,9 @@ class CustomPacketsUI(BaseTabWidget):
     def get_button_view(self) -> BasePushButtonWidget:
         return self.button_view
 
+    def is_show_ports(self) -> bool:
+        return self.show_port
+
     def add_interface(self, interface: str):
         self.interface.add_item(interface)
 
