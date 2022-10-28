@@ -69,10 +69,13 @@ class NetworkScanningView(NetworkScanningUi):
     # ---------- #
 
     def update_output_list(self):
-        self.clear_output()
+        important_count = 0
         for r in self.results:
             if r.is_important():
                 self.add_output_item(r)
+                important_count += 1
+        if important_count == 0:
+            self.set_error("No hosts were found...")
 
     # --------------- #
     #    VALIDATORS   #

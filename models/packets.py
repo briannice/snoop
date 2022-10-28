@@ -17,9 +17,10 @@ class EthPacket():
             self.src = ""
             self.dst = ""
             self.type = ""
+        self.summary = packet.summary()
 
     def to_text_short(self):
-        return "[Eth]"
+        return self.summary
 
     def to_text_extended(self):
         contents = {
@@ -44,11 +45,12 @@ class IPPacket():
             self.dst = ""
             self.ttl = ""
             self.id = ""
+        self.summary = packet.summary()
 
         self.eth = EthPacket(packet)
 
     def to_text_short(self):
-        return "[IP]"
+        return self.summary
 
     def to_text_extended(self):
         contents = {
@@ -73,11 +75,12 @@ class TCPPacket():
             self.sport = ""
             self.dport = ""
             self.flags = ""
+        self.summary = packet.summary()
 
         self.ip = IPPacket(packet)
 
     def to_text_short(self):
-        return "[TCP]"
+        return self.summary
 
     def to_text_extended(self):
         contents = {
@@ -99,11 +102,12 @@ class UDPPacket():
         else:
             self.type = ""
             self.code = ""
+        self.summary = packet.summary()
 
         self.ip = IPPacket(packet)
 
     def to_text_short(self):
-        return "[UDP]"
+        return self.summary
 
     def to_text_extended(self):
         contents = {
@@ -130,11 +134,12 @@ class ICMPPacket():
             self.chksum = ""
             self.id = ""
             self.seq = ""
+        self.summary = packet.summary()
 
         self.ip = IPPacket(packet)
 
     def to_text_short(self):
-        return "[ICMP]"
+        return self.summary
 
     def to_text_extended(self):
         contents = {
