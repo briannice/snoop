@@ -71,9 +71,13 @@ class PortScanningView(PortScanningUi):
     # ---------- #
 
     def update_output_list(self):
+        important_count = 0
         for r in self.results:
             if r.is_important():
                 self.add_output_item(r)
+                important_count += 1
+        if important_count == 0:
+            self.set_error("No results were found...")
 
     # --------------- #
     #    VALIDATORS   #
