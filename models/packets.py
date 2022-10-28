@@ -23,9 +23,9 @@ class EthPacket():
 
     def to_text_extended(self):
         contents = {
-            "src": (self.src, 1),
-            "dst": (self.dst, 1),
-            "type": (self.type, 1),
+            "src": (str(self.src or ''), 1),
+            "dst": (str(self.dst or ''), 1),
+            "type": (str(self.type or ''), 1),
         }
         return format_grid(contents, "Eth")
 
@@ -52,10 +52,10 @@ class IPPacket():
 
     def to_text_extended(self):
         contents = {
-            "src": (self.src, 1),
-            "dst": (self.dst, 1),
-            "ttl": (self.ttl, 1),
-            "id": (self.id, 1),
+            "src": (str(self.src or ''), 1),
+            "dst": (str(self.dst or ''), 1),
+            "ttl": (str(self.ttl or ''), 1),
+            "id": (str(self.id or ''), 1),
         }
         return format_grid(contents, "IP") + self.eth.to_text_extended()
 
@@ -81,9 +81,9 @@ class TCPPacket():
 
     def to_text_extended(self):
         contents = {
-            "flags": (TCPFlags.to_string(self.flags), 2),
-            "sport": (self.sport, 1),
-            "dport": (self.dport, 1)
+            "flags": (str(TCPFlags.to_string(self.flags) or ''), 2),
+            "sport": (str(self.sport or ''), 1),
+            "dport": (str(self.dport or ''), 1)
         }
         return format_grid(contents, "TCP") + self.ip.to_text_extended()
 
@@ -107,8 +107,8 @@ class UDPPacket():
 
     def to_text_extended(self):
         contents = {
-            "sport": (self.sport, 1),
-            "dport": (self.dport, 1)
+            "sport": (str(self.sport or ''), 1),
+            "dport": (str(self.dport or ''), 1)
         }
         return format_grid(contents, "UDP") + self.ip.to_text_extended()
 
@@ -138,10 +138,10 @@ class ICMPPacket():
 
     def to_text_extended(self):
         contents = {
-            "type": (self.type, 1),
-            "code": (self.code, 1),
-            "chksum": (self.chksum, 1),
-            "id": (self.id, 1),
-            "seq": (self.seq, 1),
+            "type": (str(self.type or ''), 1),
+            "code": (str(self.code or ''), 1),
+            "chksum": (str(self.chksum or ''), 1),
+            "id": (str(self.id or ''), 1),
+            "seq": (str(self.seq or ''), 1),
         }
         return format_grid(contents, "ICMP") + self.ip.to_text_extended()
