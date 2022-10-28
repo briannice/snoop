@@ -3,7 +3,7 @@ def port_validator(text: str) -> str | None:
     if text == "":
         return "Port can not be empty"
     try:
-        text = str(text)
+        text = int(text)
     except:
         return "Port must be a number"
     if text < 0:
@@ -17,7 +17,7 @@ def icmp_type_validator(text: str) -> str | None:
     if text == "":
         return "ICMP type can not be empty"
     try:
-        text = str(text)
+        text = int(text)
     except:
         return "ICMP type must be a number"
     if text < 0:
@@ -31,7 +31,7 @@ def icmp_code_validator(text: str) -> str | None:
     if text == "":
         return "ICMP code can not be empty"
     try:
-        text = str(text)
+        text = int(text)
     except:
         return "ICMP code must be a number"
     if text < 0:
