@@ -114,7 +114,7 @@ class NsLookupResult():
         result += format_text("SOA", sep="=")
         for record in self.SOA:
             text = ""
-            text += format_text(record["Primary name server"], sep="-")
+            text += format_text("Primary name server: " + record["Primary name server"], sep="-")
             for key, value in record.items():
                 if key == "Primary name server":
                     continue
