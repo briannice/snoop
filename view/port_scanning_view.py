@@ -5,7 +5,7 @@ from PyQt5.QtCore import QThreadPool
 
 from models.results import PortScanConclusion
 from ui import PortScanningUi
-from utils import port_input_validator
+from utils.validators import port_range_validator
 from workers import PortScanningWorker
 
 
@@ -71,9 +71,13 @@ class PortScanningView(PortScanningUi):
     # ---------- #
 
     def update_output_list(self):
+        important_count = 0
         for r in self.results:
             if r.is_important():
                 self.add_output_item(r)
+                important_count += 1
+        if important_count == 0:
+            self.set_error("No results were found...")
 
     # --------------- #
     #    VALIDATORS   #
@@ -98,7 +102,7 @@ class PortScanningView(PortScanningUi):
 
     def validate_ports_input(self) -> bool:
         ports = self.get_ports_input()
-        error = port_input_validator(ports)
+        error = port_range_validator(ports)
 
         if error is None:
             self.clear_ports_error()

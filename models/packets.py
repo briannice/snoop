@@ -61,6 +61,7 @@ class IPPacket():
             self.dst = ""
             self.ttl = ""
             self.id = ""
+        self.summary = packet.summary()
 
         self.eth = EthPacket(packet)
 
@@ -90,6 +91,7 @@ class TCPPacket():
             self.sport = ""
             self.dport = ""
             self.flags = ""
+        self.summary = packet.summary()
 
         self.ip = IPPacket(packet)
 
@@ -116,6 +118,7 @@ class UDPPacket():
         else:
             self.type = ""
             self.code = ""
+        self.summary = packet.summary()
 
         self.ip = IPPacket(packet)
 
@@ -147,6 +150,7 @@ class ICMPPacket():
             self.chksum = ""
             self.id = ""
             self.seq = ""
+        self.summary = packet.summary()
 
         self.ip = IPPacket(packet)
 

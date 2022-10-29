@@ -3,6 +3,7 @@ from ui import CustomPacketsUI
 from lib.sniffing import get_interfaces
 from workers import CustomPacketsWorker
 from PyQt5.QtCore import QThreadPool
+from utils.validators import port_validator, icmp_code_validator, icmp_type_validator
 
 
 class CustomPacketsView(CustomPacketsUI):
@@ -96,87 +97,51 @@ class CustomPacketsView(CustomPacketsUI):
         return v1 and v2
 
     def validate_source(self) -> bool:
+        errors = []
         address = self.get_source_address()
         try:
             IPv4Address(address)
-            self.clear_source_error()
-            return True
         except Exception as e:
             error = str(e)
-            self.set_source_error(error)
+            errors.append(error)
+        if self.is_show_ports():
+            port = self.get_source_port()
+            error = port_validator(port)
+            if error is not None:
+                errors.append(error)
+        else:
+            type = self.get_icmp_type()
+            error = icmp_type_validator(type)
+            if error is not None:
+                errors.append(error)
+        if len(errors) == 0:
+            self.clear_source_error()
+            return True
+        else:
+            self.set_source_error(errors[0])
             return False
 
     def validate_destination(self) -> bool:
+        errors = []
         address = self.get_destination_address()
         try:
             IPv4Address(address)
-            self.clear_destination_error()
-            return True
         except Exception as e:
             error = str(e)
-            self.set_destination_error(error)
+            errors.append(error)
+        if self.is_show_ports():
+            port = self.get_destination_port()
+            error = port_validator(port)
+            if error is not None:
+                errors.append(error)
+        else:
+            type = self.get_icmp_code()
+            error = icmp_code_validator(type)
+            if error is not None:
+                errors.append(error)
+        if len(errors) == 0:
+            self.clear_destination_error()
+            return True
+        else:
+            self.set_destination_error(errors[0])
             return False
-
-        # # Send ICMP packets
-        # def send_packets(self):
-
-        #     # Worker(s)
-        #     create_packets_worker = CreatePacketsWorker()
-
-        #     # Inputs that always need to be valid
-        #     source = self.input_source_address.text()
-        #     dest = self.input_destination_address.text()
-        #     inter = self.comboBox.currentText()
-        #     cnt = int(self.input_count.text())
-
-        #     # ICMP
-        #     if self.radioButton_icmp.isChecked():
-        #         try:
-        #             # Inputs
-        #             message = self.input_icmp_message.toPlainText()
-        #             # Command
-        #             if cnt is None:
-        #                 cnt = 1
-        #             if message is None:
-        #                 message = "Hello world"
-        #             create_packets_worker.SendICMP_worker(source, dest, inter, cnt, message)
-
-        #         except ValueError:
-        #             print("ICMP Value error")
-
-        #     # TCP
-        #     if self.radioButton_tcp.isChecked():
-        #         try:
-        #             # Inputs
-        #             sport = int(self.input_port_source.text())
-        #             dstport = int(self.input_port_destination.text())
-        #             # Command
-        #             create_packets_worker.SendTCP_worker(source, dest, dstport, sport, inter, cnt)
-        #         except ValueError:
-        #             print("TCP Value error")
-
-        #     # TCP
-        #     if self.radioButton_udp.isChecked():
-        #         try:
-        #             # Inputs
-        #             sport = int(self.input_port_source.text())
-        #             dstport = int(self.input_port_destination.text())
-        #             # Command
-        #             create_packets_worker.SendUDP_worker(source, dest, dstport, sport, inter, cnt)
-        #         except ValueError:
-        #             print("UDP Value error")
-
-        # # Set standards for some protocols
-        # # Ex. ICMP does not use ports etc.
-        # def check_protocol(self):
-        #     # ICMP check
-        #     if self.radioButton_icmp.isChecked():
-        #         self.input_port_source.setDisabled(True)
-        #         self.input_port_destination.setDisabled(True)
-        #         self.input_icmp_message.setEnabled(True)
-
-        #     # TCP check
-        #     if self.radioButton_tcp.isChecked() or self.radioButton_udp.isChecked():
-        #         self.input_port_source.setEnabled(True)
-        #         self.input_port_destination.setEnabled(True)
-        #         self.input_icmp_message.setDisabled(True)

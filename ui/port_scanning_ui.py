@@ -13,7 +13,8 @@ class PortScanningUi(BaseTabWidget):
         self.title = BaseLabelWidget(type="title", text="Port scanning")
         self.info = BaseLabelWidget(type="info", align="r")
         self.host = CustomTextInputWidget("Host", "Example: 192.168.56.1")
-        self.ports = CustomTextInputWidget("Ports", "Using individual ports: 22,23,80\nUsing ranges: 22-24,80")
+        self.ports = CustomTextInputWidget(
+            "Ports", "Example using individual ports: 22,23,80\nExample using ranges: 22-24,80")
         self.packets = CustomCheckBoxGroupWidget("Packets", ["Stealth", "Connect", "Xmas", "FIN", "Null", "ACK"])
         self.output = BaseListWidget()
         self.button_scan = BasePushButtonWidget("Start scan")
