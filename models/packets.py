@@ -1,8 +1,24 @@
 from models.utils import TCPFlags
-from scapy.layers.inet import ICMP, IP, TCP, UDP
-from scapy.layers.l2 import Ether
-from typing import List
-from utils.formating import format_grid
+from utils.formating import format_grid, format_payload
+from scapy.all import ICMP, IP, TCP, UDP, Ether, Raw
+
+
+class PayloadPacket():
+
+    def __init__(self, packet):
+        if packet.haslayer(Raw):
+            try:
+                self.payload = packet.getlayer(Raw).load.decode("utf-8")
+            except Exception:
+                self.payload = ""
+        else:
+            self.payload = ""
+
+    def to_text_extended(self):
+        return format_payload(self.payload or '')
+
+    def to_text_short(self):
+        return self.payload or ''
 
 
 class EthPacket():
@@ -17,9 +33,10 @@ class EthPacket():
             self.src = ""
             self.dst = ""
             self.type = ""
+        self.payload = PayloadPacket(packet)
 
     def to_text_short(self):
-        return "[Eth]"
+        return f"src={self.src or ''}  dst={self.dst or ''} / " + self.payload.to_text_short()
 
     def to_text_extended(self):
         contents = {
@@ -27,7 +44,7 @@ class EthPacket():
             "dst": (str(self.dst or ''), 1),
             "type": (str(self.type or ''), 1),
         }
-        return format_grid(contents, "Eth")
+        return format_grid(contents, "Eth") + self.payload.to_text_extended()
 
 
 class IPPacket():
@@ -48,7 +65,7 @@ class IPPacket():
         self.eth = EthPacket(packet)
 
     def to_text_short(self):
-        return "[IP]"
+        return f"src={self.src or ''}  dst={self.dst or ''} / " + self.eth.to_text_short()
 
     def to_text_extended(self):
         contents = {
@@ -77,7 +94,7 @@ class TCPPacket():
         self.ip = IPPacket(packet)
 
     def to_text_short(self):
-        return "[TCP]"
+        return f"[TCP]   sport={self.sport or ''}  dport={self.dport or ''}  flags={TCPFlags.to_string(self.flags) or ''} / " + self.ip.to_text_short()
 
     def to_text_extended(self):
         contents = {
@@ -103,7 +120,7 @@ class UDPPacket():
         self.ip = IPPacket(packet)
 
     def to_text_short(self):
-        return "[UDP]"
+        return f"[UDP]   sport={self.sport or ''}  dport={self.dport or ''} / " + self.ip.to_text_short()
 
     def to_text_extended(self):
         contents = {
@@ -134,7 +151,7 @@ class ICMPPacket():
         self.ip = IPPacket(packet)
 
     def to_text_short(self):
-        return "[ICMP]"
+        return f"[ICMP]  type={self.type or ''}  dport={self.code or ''} / " + self.ip.to_text_short()
 
     def to_text_extended(self):
         contents = {

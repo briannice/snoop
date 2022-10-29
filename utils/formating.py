@@ -62,7 +62,7 @@ def format_grid(contents: Dict[str, str], info: str):
     count = 0
     for key, (value, col) in contents.items():
         if count % 2 == 0:
-            result += f"{info: <8}"
+            result += f"{info: <12}"
         result += f"{key: <6}"
         result += " → "
         if col == 1:
@@ -75,6 +75,21 @@ def format_grid(contents: Dict[str, str], info: str):
             result += "\n"
     if count % 2 == 1:
         result += "\n"
+    return result
+
+
+def format_payload(payload: str):
+    n = 64
+    payloads = [payload[i:i+n] for i in range(0, len(payload), n)]
+    info = "[payload]"
+    empty = ""
+    result = ""
+    result += f"{info: <12}"
+    for i, payload in enumerate(payloads):
+        result += payload
+        result += "\n"
+        if i != len(payloads) - 1:
+            result += f"{empty: <12}"
     return result
 
 
