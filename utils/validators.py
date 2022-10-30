@@ -1,4 +1,3 @@
-
 def port_validator(text: str) -> str | None:
     if text == "":
         return "Port can not be empty"
@@ -82,4 +81,11 @@ def domain_name_validator(domain: str) -> str | None:
         return "Domain must be at least 2 characters"
     if len(domain) > 63:
         return "Domain cannot be more than 63 characters"
+    return None
+
+
+def ipv4_address_validator(domain: str) -> str | None:
+    octets = domain.split(".")
+    if len(octets) != 4:
+        return "Not a valid IPv4 address"
     return None

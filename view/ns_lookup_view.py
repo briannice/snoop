@@ -14,7 +14,7 @@ class NsLookupView(NsLookupUi):
         super().__init__(*args, **kwargs)
 
         # Setup
-        self.thead_pool = QThreadPool.globalInstance()
+        self.thread_pool = QThreadPool.globalInstance()
 
         # Data
         self.is_looking: bool = False
@@ -44,7 +44,7 @@ class NsLookupView(NsLookupUi):
 
         worker = NsLookupWorker(domain, records)
         worker.signals.data.connect(self.handler_signal_data)
-        self.thead_pool.start(worker)
+        self.thread_pool.start(worker)
 
     def handler_button_clear(self):
         self.result = None
