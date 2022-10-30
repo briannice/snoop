@@ -1,18 +1,18 @@
 from PyQt5.QtCore import QRunnable, pyqtSlot
 
-from lib.whois_search import whoisQuery
-from signals import WhoisLookupSignal
+from lib.whois import whois_query
+from signals import WhoisSignal
 
 
-class WhoisLookupWorker(QRunnable):
+class WhoisWorker(QRunnable):
     def __init__(self, domain: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.domain = domain
 
-        self.signals = WhoisLookupSignal()
+        self.signals = WhoisSignal()
 
     @pyqtSlot()
     def run(self):
-        lookup = whoisQuery(self.domain)
+        lookup = whois_query(self.domain)
         self.signals.data.emit(lookup)
