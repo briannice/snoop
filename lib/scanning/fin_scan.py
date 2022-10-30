@@ -29,17 +29,18 @@ def fin_scan(ip: IPv4Address, port: int) -> PortScanResult:
                     )
 
             if res.haslayer(ICMP):
-
-                icmp_packet = ICMPPacket(res)
-
-                return PortScanResult(
-                    ip=ip,
-                    port=port,
-                    state=PortState.FILTERED,
-                    method=PortScanMethod.FIN,
-                    icmp=icmp_packet,
-                    tcp=None
-                )
+                icmp_type = res.getlayer(ICMP).type
+                icmp_code = res.getlayer(ICMP).code
+                if icmp_type == 3 and icmp_code in [1, 2, 3, 9, 10, 13]:
+                    icmp_packet = ICMPPacket(res)
+                    return PortScanResult(
+                        ip=ip,
+                        port=port,
+                        state=PortState.FILTERED,
+                        method=PortScanMethod.FIN,
+                        icmp=icmp_packet,
+                        tcp=None
+                    )
 
         return PortScanResult(
             ip=ip,
