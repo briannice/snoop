@@ -28,7 +28,7 @@ class WhoisView(WhoisUi):
     def handler_button_lookup(self):
         if self.is_looking:
             return
-        if not self.validate_domain():
+        if not self.validate_input():
             return
 
         self.is_looking = True
@@ -59,8 +59,7 @@ class WhoisView(WhoisUi):
     #    VALIDATORS   #
     # --------------- #
 
-    # todo: kan zijn dat domain validatie nog aangepast gaat moeten worden naargelang keuze IP of domain lookup
-    def validate_domain(self) -> bool:
+    def validate_input(self) -> bool:
         domain = self.get_domain()
         error = ipv4_address_validator(domain)
         if error is None:

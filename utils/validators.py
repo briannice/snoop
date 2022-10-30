@@ -1,3 +1,6 @@
+from ipaddress import IPv4Network, IPv4Address, IPv6Address
+
+
 def port_validator(text: str) -> str | None:
     if text == "":
         return "Port can not be empty"
@@ -84,8 +87,29 @@ def domain_name_validator(domain: str) -> str | None:
     return None
 
 
-def ipv4_address_validator(domain: str) -> str | None:
-    octets = domain.split(".")
-    if len(octets) != 4:
-        return "Not a valid IPv4 address"
-    return None
+def ipv4_network_validator(ip: str, replace: str = "Network") -> str | None:
+    try:
+        IPv4Network(ip)
+        return None
+    except Exception as e:
+        error = str(e).replace("Network", replace)
+        return error
+
+
+def ipv4_address_validator(ip: str, replace: str = "Address") -> str | None:
+    try:
+        IPv4Network(ip)
+        return None
+    except Exception as e:
+        error = str(e).replace("Address", replace)
+        return error
+
+
+def ipv6_address_validator(ip: str, replace: str = "Network") -> str | None:
+    try:
+        IPv6Address(ip)
+        return None
+    except Exception as e:
+        error = str(e).replace("Address", replace)
+        return error
+
