@@ -69,6 +69,9 @@ class SniffingView(SniffingUI):
         self.packets = []
 
     def handler_signals_packet(self, packet):
+        if packet is None:
+            return
+
         self.count += 1
 
         # Check for ICMP --> Do not put in buffer

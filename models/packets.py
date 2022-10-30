@@ -18,7 +18,9 @@ class PayloadPacket():
         return format_payload(self.payload or '')
 
     def to_text_short(self):
-        return self.payload or ''
+        if self.payload == '':
+            return ''
+        return f"payload={self.payload}"
 
 
 class EthPacket():
@@ -33,10 +35,9 @@ class EthPacket():
             self.src = ""
             self.dst = ""
             self.type = ""
-        self.payload = PayloadPacket(packet)
-
+        
     def to_text_short(self):
-        return f"src={self.src or ''}  dst={self.dst or ''} / " + self.payload.to_text_short()
+        return f"src={self.src or ''}  dst={self.dst or ''}"
 
     def to_text_extended(self):
         contents = {
@@ -91,12 +92,11 @@ class TCPPacket():
             self.sport = ""
             self.dport = ""
             self.flags = ""
-        self.summary = packet.summary()
-
         self.ip = IPPacket(packet)
+        self.payload = PayloadPacket(packet)
 
     def to_text_short(self):
-        return f"[TCP]   sport={self.sport or ''}  dport={self.dport or ''}  flags={TCPFlags.to_string(self.flags) or ''} / " + self.ip.to_text_short()
+        return f"[TCP]   {self.ip.src or ''}:{self.sport or ''} → {self.ip.dst or 0}:{self.dport or 0} flags={TCPFlags.to_string(self.flags) or ''} {self.payload.to_text_short()}"
 
     def to_text_extended(self):
         contents = {
@@ -118,12 +118,11 @@ class UDPPacket():
         else:
             self.type = ""
             self.code = ""
-        self.summary = packet.summary()
-
         self.ip = IPPacket(packet)
+        self.payload = PayloadPacket(packet)
 
     def to_text_short(self):
-        return f"[UDP]   sport={self.sport or ''}  dport={self.dport or ''} / " + self.ip.to_text_short()
+        return f"[UDP]   {self.ip.src or ''}:{self.sport or ''} → {self.ip.dst or 0}:{self.dport or 0} {self.payload.to_text_short()}"
 
     def to_text_extended(self):
         contents = {
@@ -150,12 +149,12 @@ class ICMPPacket():
             self.chksum = ""
             self.id = ""
             self.seq = ""
-        self.summary = packet.summary()
-
         self.ip = IPPacket(packet)
+        self.payload = PayloadPacket(packet)
+
 
     def to_text_short(self):
-        return f"[ICMP]  type={self.type or ''}  dport={self.code or ''} / " + self.ip.to_text_short()
+        return f"[ICMP]  {self.ip.src or ''} → {self.ip.dst or ''} type={self.type or 0} code={self.code or 0} {self.payload.to_text_short()}"
 
     def to_text_extended(self):
         contents = {
