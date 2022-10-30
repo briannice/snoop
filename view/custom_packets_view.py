@@ -1,9 +1,8 @@
-from ipaddress import IPv4Address
 from ui import CustomPacketsUI
 from lib.sniffing import get_interfaces
 from workers import CustomPacketsWorker
 from PyQt5.QtCore import QThreadPool
-from utils.validators import port_validator, icmp_code_validator, icmp_type_validator
+from utils.validators import port_validator, icmp_code_validator, icmp_type_validator, ipv4_address_validator
 
 
 class CustomPacketsView(CustomPacketsUI):
@@ -99,10 +98,8 @@ class CustomPacketsView(CustomPacketsUI):
     def validate_source(self) -> bool:
         errors = []
         address = self.get_source_address()
-        try:
-            IPv4Address(address)
-        except Exception as e:
-            error = str(e)
+        error = ipv4_address_validator(address)
+        if error is not None:
             errors.append(error)
         if self.is_show_ports():
             port = self.get_source_port()
@@ -124,10 +121,8 @@ class CustomPacketsView(CustomPacketsUI):
     def validate_destination(self) -> bool:
         errors = []
         address = self.get_destination_address()
-        try:
-            IPv4Address(address)
-        except Exception as e:
-            error = str(e)
+        error = ipv4_address_validator(address)
+        if error is not None:
             errors.append(error)
         if self.is_show_ports():
             port = self.get_destination_port()

@@ -11,7 +11,7 @@ def port_validator(text: str) -> str | None:
     if text < 0:
         return "Port must be a positive number"
     if text > 65535:
-        return "Port must be less than 255"
+        return "Port must be less or equal than 65535"
     return None
 
 
@@ -24,8 +24,8 @@ def icmp_type_validator(text: str) -> str | None:
         return "ICMP type must be a number"
     if text < 0:
         return "ICMP type must be a positive number"
-    if text > 65535:
-        return "ICMP type must be less than 255"
+    if text > 255:
+        return "ICMP type must be less or equal than 255"
     return None
 
 
@@ -38,8 +38,8 @@ def icmp_code_validator(text: str) -> str | None:
         return "ICMP code must be a number"
     if text < 0:
         return "ICMP code must be a positive number"
-    if text > 65535:
-        return "ICMP code must be less than 65535"
+    if text > 255:
+        return "ICMP code must be less or equal than 255"
     return None
 
 

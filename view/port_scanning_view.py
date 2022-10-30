@@ -1,11 +1,10 @@
-from ipaddress import IPv4Address
 from typing import List
 
 from PyQt5.QtCore import QThreadPool
 
 from models.results import PortScanConclusion
 from ui import PortScanningUi
-from utils.validators import port_range_validator
+from utils.validators import port_range_validator, ipv4_address_validator
 from workers import PortScanningWorker
 
 
@@ -91,12 +90,11 @@ class PortScanningView(PortScanningUi):
 
     def validate_host_input(self) -> bool:
         ip = self.get_host_input()
-        try:
-            IPv4Address(ip)
+        error = ipv4_address_validator(ip)
+        if error is None:
             self.clear_host_error()
             return True
-        except Exception as e:
-            error = str(e).replace("Address", "Host")
+        else:
             self.set_host_error(error)
             return False
 
