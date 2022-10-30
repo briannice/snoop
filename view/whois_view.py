@@ -3,7 +3,7 @@ from PyQt5.QtCore import QThreadPool
 from models.whois import WhoisLookupResult
 from ui import WhoisUi
 from utils.validators import ipv4_address_validator
-from workers import WhoisLookupWorker
+from workers import WhoisWorker
 
 
 class WhoisView(WhoisUi):
@@ -38,7 +38,7 @@ class WhoisView(WhoisUi):
 
         domain = self.get_domain()
 
-        worker = WhoisLookupWorker(domain)
+        worker = WhoisWorker(domain)
         worker.signals.data.connect(self.handler_signal_data)
         self.thread_pool.start(worker)
 

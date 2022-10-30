@@ -1,5 +1,5 @@
 from PyQt5.QtCore import pyqtSignal, QObject
 
 
-class WhoisLookupSignal(QObject):
+class WhoisSignal(QObject):
     data = pyqtSignal(object)
