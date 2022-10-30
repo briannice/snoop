@@ -5,6 +5,7 @@ from PyQt5.QtCore import QThreadPool
 
 from models.results import HostScanConclusion
 from ui import NetworkScanningUi
+from utils.validators import ipv4_network_validator
 from workers import NetworkScanningWorker
 
 
@@ -88,14 +89,12 @@ class NetworkScanningView(NetworkScanningUi):
 
     def validate_network_input(self) -> bool:
         network = self.get_network_input()
-        try:
-            IPv4Network(network)
+        error = ipv4_network_validator(network)
+        if error is None:
             self.clear_network_error()
             return True
-        except Exception as e:
-            error = str(e).replace("Address", "Network")
-            self.set_network_error(error)
-            return False
+        self.set_network_error(error)
+        return False
 
     def validate_protocols(self) -> bool:
         for _, value in self.get_protocols_checkboxes().items():
