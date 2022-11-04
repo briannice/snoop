@@ -2,6 +2,12 @@ from models.utils import TCPFlags
 from utils.formating import format_grid, format_payload
 from scapy.all import ICMP, IP, TCP, UDP, Ether, Raw
 
+def conv(v):
+    if v in ['', None]:
+        return ''
+    else:
+        return str(v)
+
 
 class PayloadPacket():
 
@@ -15,7 +21,7 @@ class PayloadPacket():
             self.payload = ""
 
     def to_text_extended(self):
-        return format_payload(self.payload or '')
+        return format_payload(self.payload )
 
     def to_text_short(self):
         if self.payload == '':
@@ -37,15 +43,15 @@ class EthPacket():
             self.type = ""
         
     def to_text_short(self):
-        return f"src={self.src or ''}  dst={self.dst or ''}"
+        return f"src={self.src }  dst={self.dst }"
 
     def to_text_extended(self):
         contents = {
-            "src": (str(self.src or ''), 1),
-            "dst": (str(self.dst or ''), 1),
-            "type": (str(self.type or ''), 1),
+            "src": (conv(self.src), 1),
+            "dst": (conv(self.dst), 1),
+            "type": (conv(self.type), 1),
         }
-        return format_grid(contents, "Eth") + self.payload.to_text_extended()
+        return format_grid(contents, "Eth")
 
 
 class IPPacket():
@@ -67,14 +73,14 @@ class IPPacket():
         self.eth = EthPacket(packet)
 
     def to_text_short(self):
-        return f"src={self.src or ''}  dst={self.dst or ''} / " + self.eth.to_text_short()
+        return f"src={conv(self.src)}  dst={conv(self.dst)} / " + self.eth.to_text_short()
 
     def to_text_extended(self):
         contents = {
-            "src": (str(self.src or ''), 1),
-            "dst": (str(self.dst or ''), 1),
-            "ttl": (str(self.ttl or ''), 1),
-            "id": (str(self.id or ''), 1),
+            "src": (conv(self.src), 1),
+            "dst": (conv(self.dst), 1),
+            "ttl": (conv(self.ttl), 1),
+            "id": (conv(self.id), 1),
         }
         return format_grid(contents, "IP") + self.eth.to_text_extended()
 
@@ -87,24 +93,30 @@ class TCPPacket():
             tcp = packet.getlayer(TCP)
             self.sport = tcp.sport
             self.dport = tcp.dport
+            self.seq = tcp.seq
+            self.ack = tcp.ack
             self.flags = TCPFlags.to_list(tcp.flags)
         else:
             self.sport = ""
             self.dport = ""
+            self.seq = ""
+            self.ack = ""
             self.flags = ""
         self.ip = IPPacket(packet)
         self.payload = PayloadPacket(packet)
 
     def to_text_short(self):
-        return f"[TCP]   {self.ip.src or ''}:{self.sport or ''} → {self.ip.dst or 0}:{self.dport or 0} flags={TCPFlags.to_string(self.flags) or ''} {self.payload.to_text_short()}"
+        return f"[TCP]   {conv(self.ip.src)}:{conv(self.sport)} → {conv(self.ip.dst)}:{conv(self.dport)} flags={conv(TCPFlags.to_string(self.flags))} {self.payload.to_text_short()}"
 
     def to_text_extended(self):
         contents = {
-            "flags": (str(TCPFlags.to_string(self.flags) or ''), 2),
-            "sport": (str(self.sport or ''), 1),
-            "dport": (str(self.dport or ''), 1)
+            "flags": (conv(TCPFlags.to_string(self.flags)), 2),
+            "sport": (conv(self.sport), 1),
+            "dport": (conv(self.dport), 1),
+            "seq": (conv(self.seq), 1),
+            "ack": (conv(self.ack), 1)
         }
-        return format_grid(contents, "TCP") + self.ip.to_text_extended()
+        return format_grid(contents, "TCP") + self.ip.to_text_extended() +  self.payload.to_text_extended()
 
 
 class UDPPacket():
@@ -116,20 +128,20 @@ class UDPPacket():
             self.sport = udp.sport
             self.dport = udp.dport
         else:
-            self.type = ""
-            self.code = ""
+            self.sport = ""
+            self.dport = ""
         self.ip = IPPacket(packet)
         self.payload = PayloadPacket(packet)
 
     def to_text_short(self):
-        return f"[UDP]   {self.ip.src or ''}:{self.sport or ''} → {self.ip.dst or 0}:{self.dport or 0} {self.payload.to_text_short()}"
+        return f"[UDP]   {conv(self.ip.src)}:{conv(self.sport)} → {conv(self.ip.dst)}:{conv(self.dport)} {self.payload.to_text_short()}"
 
     def to_text_extended(self):
         contents = {
-            "sport": (str(self.sport or ''), 1),
-            "dport": (str(self.dport or ''), 1)
+            "sport": (conv(self.sport), 1),
+            "dport": (conv(self.dport), 1)
         }
-        return format_grid(contents, "UDP") + self.ip.to_text_extended()
+        return format_grid(contents, "UDP") + self.ip.to_text_extended() + self.payload.to_text_extended()
 
 
 class ICMPPacket():
@@ -154,14 +166,14 @@ class ICMPPacket():
 
 
     def to_text_short(self):
-        return f"[ICMP]  {self.ip.src or ''} → {self.ip.dst or ''} type={self.type or 0} code={self.code or 0} {self.payload.to_text_short()}"
+        return f"[ICMP]  {conv(self.ip.src)} → {conv(self.ip.dst)} type={conv(self.type)} code={conv(self.code)} {self.payload.to_text_short()}"
 
     def to_text_extended(self):
         contents = {
-            "type": (str(self.type or ''), 1),
-            "code": (str(self.code or ''), 1),
-            "chksum": (str(self.chksum or ''), 1),
-            "id": (str(self.id or ''), 1),
-            "seq": (str(self.seq or ''), 1),
+            "type": (conv(self.type), 1),
+            "code": (conv(self.code), 1),
+            "chksum": (conv(self.chksum), 1),
+            "id": (conv(self.id), 1),
+            "seq": (conv(self.seq), 1),
         }
-        return format_grid(contents, "ICMP") + self.ip.to_text_extended()
+        return format_grid(contents, "ICMP") + self.ip.to_text_extended() + self.payload.to_text_extended()
