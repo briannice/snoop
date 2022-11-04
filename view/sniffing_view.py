@@ -66,6 +66,7 @@ class SniffingView(SniffingUI):
     def handler_button_clear(self):
         self.set_count(0)
         self.clear_output()
+        self.count = 0
         self.packets = []
 
     def handler_signals_packet(self, packet):

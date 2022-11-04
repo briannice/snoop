@@ -61,22 +61,15 @@ class NetworkScanningUi(BaseTabWidget):
     def set_protocols_error(self, error: str):
         self.protocols.set_error(error)
 
-    def set_filter_error(self, error: str):
-        self.filter.set_error(error)
-
     def clear_network_error(self):
         self.network.remove_error()
 
     def clear_protocols_error(self):
         self.protocols.remove_error()
 
-    def clear_filter_error(self):
-        self.filter.remove_error()
-
     def clear_errors(self):
         self.clear_network_error()
         self.clear_protocols_error()
-        self.clear_filter_error()
 
     def clear_output(self):
         self.output.clear()

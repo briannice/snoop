@@ -16,7 +16,7 @@ def send_icmp(
     if res is None:
         return None
     else:
-        return ICMPPacket(packet)
+        return ICMPPacket(res)
 
 
 def send_tcp(
@@ -32,7 +32,7 @@ def send_tcp(
     if res is None:
         return None
     else:
-        return TCPPacket(packet)
+        return TCPPacket(res)
 
 
 def send_udp(
@@ -48,4 +48,4 @@ def send_udp(
     if res is None:
         return None
     else:
-        return UDPPacket(packet)
+        return UDPPacket(res)
