@@ -80,13 +80,13 @@ def format_grid(contents: Dict[str, str], info: str):
 
 def format_payload(payload: str):
     n = 64
-    payloads = [payload[i:i+n] for i in range(0, len(payload), n)]
+    payloads = payload.split("\n")
     info = "[payload]"
     empty = ""
     result = ""
     result += f"{info: <12}"
-    for i, payload in enumerate(payloads):
-        result += payload
+    for i, p in enumerate(payloads):
+        result += p
         result += "\n"
         if i != len(payloads) - 1:
             result += f"{empty: <12}"
